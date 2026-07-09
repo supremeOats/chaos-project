@@ -36,7 +36,7 @@ Vector3& Vector3::operator/= (const double scalar)
     return *this;
 }
 
-Vector3& operator+ (const Vector3& lhs, const Vector3& rhs)
+Vector3 operator+ (const Vector3& lhs, const Vector3& rhs)
 {
     return {
         lhs.x() + rhs.x(),
@@ -45,7 +45,7 @@ Vector3& operator+ (const Vector3& lhs, const Vector3& rhs)
     };
 }
 
-Vector3& operator- (const Vector3& lhs, const Vector3& rhs)
+Vector3 operator- (const Vector3& lhs, const Vector3& rhs)
 {
     return {
         lhs.x() - rhs.x(),
@@ -54,7 +54,7 @@ Vector3& operator- (const Vector3& lhs, const Vector3& rhs)
     };
 }
 
-Vector3& operator* (const Vector3& vec, const double scalar)
+Vector3 operator* (const Vector3& vec, const double scalar)
 {
     return {
         vec.x() * scalar,
@@ -63,7 +63,7 @@ Vector3& operator* (const Vector3& vec, const double scalar)
     };
 }
 
-Vector3& operator/ (const Vector3& vec, const double scalar)
+Vector3 operator/ (const Vector3& vec, const double scalar)
 {
     return {
         vec.x() / scalar,
