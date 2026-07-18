@@ -13,6 +13,10 @@ public:
     
     // const Point3 get_vertex (const int i) const;
 
+    bool in_triangle(const Point3& p) const;
+    bool in_plane(const Point3& p) const;
+
 private:
     Point3 p[3];
+
 };

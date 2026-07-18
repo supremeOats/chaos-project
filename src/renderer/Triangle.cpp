@@ -33,3 +33,18 @@ Vector3 Triangle::normal() const
     return normalized(v3);
 }
 
+bool Triangle::in_triangle(const Point3& p) const
+{
+
+}
+
+bool Triangle::in_plane(const Point3& p) const
+{
+    Vector3 normVec = this->normal();
+
+    return !(
+        p.x() * normVec.x() +
+        p.y() * normVec.y() +
+        p.z() * normVec.z()
+    );
+}
