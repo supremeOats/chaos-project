@@ -17,3 +17,9 @@ struct Color
         return f;
     }
 };
+
+static const Color BLACK {0, 0, 0};
+static const Color WHITE {255, 255, 255};
+static const Color RED   {255, 0, 0};
+static const Color GREEN {0, 255, 0};
+static const Color BLUE  {0, 0, 255};
