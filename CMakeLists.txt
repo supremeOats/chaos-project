@@ -8,8 +8,12 @@ set(SOURCES main.cpp)
 
 add_executable(myproject
     src/main.cpp
-    src/renderer/Triangle.cpp
-    src/renderer/Vector3.cpp
+    src/geometry/Triangle.cpp
+    src/geometry/Vector3.cpp
+    src/geometry/Hittable.cpp
+    src/geometry/Moveable.cpp
+    src/renderer/Camera.cpp
+    include/utils/Matrix.h
 )
 
 target_include_directories(myproject PRIVATE

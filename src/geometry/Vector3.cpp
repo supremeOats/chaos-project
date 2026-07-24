@@ -1,4 +1,4 @@
-#include "Vector3.h"
+#include "geometry\Vector3.h"
 
 Vector3& Vector3::operator+= (const Vector3& vec)
 {

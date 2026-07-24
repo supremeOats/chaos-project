@@ -1,4 +1,4 @@
-#include "Triangle.h"
+#include "geometry\Triangle.h"
 
 Triangle::Triangle(const Point3& p1, const Point3& p2, const Point3& p3)
 {
