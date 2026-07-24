@@ -1,5 +1,7 @@
 #include "renderer\Camera.h"
 
+const double Camera::MAX_RAY_DEPTH = 50.0f;
+
 Camera::Camera(
     const Point3& pos, const Vector3& dir, const float fov,
     const float ratio, const unsigned width)
@@ -13,8 +15,10 @@ Color Camera::ray_color(const Ray& ray, const HittableList& world) const
 {
     Hit rec;
 
-    if (world.hit(ray, rec)) {
-        rec.normal *= 255 - rec.t*5;
+    if (world.hit(ray, rec) && 0 < rec.t && rec.t < MAX_RAY_DEPTH) {
+        double falloff = 1.0f - rec.t/MAX_RAY_DEPTH;
+
+        rec.normal *= 255 * falloff;
         return Color{
             (unsigned char) std::abs(rec.normal.x()),
             (unsigned char) std::abs(rec.normal.y()),

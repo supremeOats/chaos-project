@@ -27,6 +27,7 @@ public:
 
 private:
     Color ray_color(const Ray& ray, const HittableList& scene) const;
+    static const double MAX_RAY_DEPTH;
 
 private:
     float _fov;

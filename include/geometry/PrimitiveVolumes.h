@@ -49,8 +49,14 @@ public:
 
     bool hit(const Ray& ray, Hit& hitData) const override
     {
-        hitData = {0, {0, 0, 1}, {0, 0, 0}};
-        return dot(n, ray.direction()) >= 0;
+        if (dot(n, ray.direction()) <= 0)
+            return false;
+
+        hitData.t = dot(n, ray.origin() - p) / dot(n, ray.direction());
+        hitData.point = ray.at(hitData.t);
+        hitData.normal = n;
+
+        return true;
     }
 
 private:
