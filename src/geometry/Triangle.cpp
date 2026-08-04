@@ -1,4 +1,4 @@
-#include "geometry\Triangle.h"
+#include "geometry/Triangle.h"
 
 Triangle::Triangle(const Point3& p1, const Point3& p2, const Point3& p3)
 {
@@ -13,6 +13,8 @@ Triangle::Triangle(const Point3& p1, const Point3& p2, const Point3& p3)
     p[0] = p1;
     p[1] = p2;
     p[2] = p3;
+
+    update_norm();
 }
 
 float Triangle::area() const
@@ -24,13 +26,37 @@ float Triangle::area() const
     return v3.length() / 2;
 }
 
-Vector3 Triangle::normal() const
+void Triangle::update_norm()
 {
     Vector3 v1 = p[1] - p[0];
     Vector3 v2 = p[2] - p[0];
     Vector3 v3 = cross(v1, v2);
 
-    return normalized(v3);
+    norm = normalized(v3);
+}
+
+bool Triangle::hit(const Ray& ray, const double rayMaxDist, Hit& hitData) const
+{    
+    double rayNormDot = dot(norm, ray.direction());
+
+    if (0 <= rayNormDot)
+        return false;
+
+    float dist = dot(norm, p[0] - ray.origin()) / rayNormDot;
+
+    if (dist <= rayMaxDist && !perpendicular(ray.direction(), norm)) {
+        Point3 intersectionPoint = ray.at(dist);
+    
+        if (in_triangle(intersectionPoint)) {
+            hitData.t = dist;
+            hitData.point = intersectionPoint;
+            hitData.normal = norm;
+            
+            return true;
+        }
+    }
+    
+    return false;
 }
 
 bool Triangle::in_triangle(const Point3& p) const
@@ -52,13 +78,7 @@ bool Triangle::in_triangle(const Point3& p) const
 
 bool Triangle::in_plane(const Point3& p) const
 {
-    Vector3 normVec = this->normal();
-
-    return !(
-        p.x() * normVec.x() +
-        p.y() * normVec.y() +
-        p.z() * normVec.z()
-    );
+    return dot(norm, p - this->p[0]) == 0;
 }
 
 const Point3& Triangle::operator[] (const int i) const

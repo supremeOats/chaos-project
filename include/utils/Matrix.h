@@ -75,6 +75,8 @@ Matrix<T, N, M>& Matrix<T, N, M>::operator=(const Matrix<T, N, M>& m)
 	// 	throw std::invalid_argument("Matrices must have the same dimensions");
 
 	std::memcpy(data, m.data, N * M * sizeof(T));
+
+	return *this;
 }
 
 template<typename T, const unsigned N, const unsigned M>
@@ -89,6 +91,7 @@ Matrix<T, N, M>& Matrix<T, N, M>::operator=(Matrix<T, N, M>&& m)
 	delete[] data;
 	data = m.data;
 	m.data = nullptr;
+	
 	return *this;
 }
 

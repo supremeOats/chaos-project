@@ -1,22 +1,28 @@
-#include "renderer\Camera.h"
+#include "renderer/Camera.h"
 
-const double Camera::MAX_RAY_DEPTH = 50.0f;
+const double Camera::RAY_MAX_DIST = 100.0;
+Color Camera::BG_COLOR = WHITE;
 
 Camera::Camera(
     const Point3& pos, const Vector3& dir, const float fov,
     const float ratio, const unsigned width)
     : Moveable(pos, dir), _fov(fov), _ratio(ratio), _width(width)
+{}
+
+Ray Camera::make_ray(const float x, const float y) const
 {
-    std::cout << "W: " << this->width() << "\tH: " << this->height() << '\n';
-    std::cout << "Ratio: " << _ratio << '/n';
+    return Ray(
+        pos(),
+        normalized(rotation_matrix() * Vector3(x, -y, -0.5f))
+    );
 }
 
 Color Camera::ray_color(const Ray& ray, const HittableList& world) const
 {
     Hit rec;
 
-    if (world.hit(ray, rec) && 0 < rec.t && rec.t < MAX_RAY_DEPTH) {
-        double falloff = 1.0f - rec.t/MAX_RAY_DEPTH;
+    if (world.hit(ray, RAY_MAX_DIST, rec) && 0 < rec.t && rec.t < RAY_MAX_DIST) {
+        double falloff = 1.0f - rec.t/RAY_MAX_DIST;
 
         rec.normal *= 255 * falloff;
         return Color{
@@ -26,7 +32,7 @@ Color Camera::ray_color(const Ray& ray, const HittableList& world) const
         };
     }
     
-    return WHITE;
+    return BG_COLOR;
 }
 
 void Camera::render(const HittableList& world, std::ofstream& imageFile) const
@@ -48,10 +54,14 @@ void Camera::render(const HittableList& world, std::ofstream& imageFile) const
 
             Ray ray(
                 pos(),
-                normalized(rotation_matrix() * Vector3(x, y, -1))
+                normalized(rotation_matrix() * Vector3(x, -y, -0.5f))
             );
 
             imageFile << ray_color(ray, world);
+            
         }
+
+        if(row % 100 == 0)
+            std::cout << 100 * (float)(row) / (height()) << "%\n";
     }
 }

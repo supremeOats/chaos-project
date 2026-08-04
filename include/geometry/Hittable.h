@@ -16,16 +16,18 @@ class Hittable
 public:
     virtual ~Hittable() = default;
 
-    virtual bool hit(const Ray& ray, Hit& hitData) const = 0;
+    virtual bool hit(const Ray& ray, const double rayMaxDist, Hit& hitData) const = 0;
 };
 
-class HittableList : private Hittable
+class HittableList : public Hittable
 {
 public:
-    bool hit(const Ray& ray, Hit& hitData) const override;
+    bool hit(const Ray& ray, const double rayMaxDist, Hit& hitData) const override;
 
     void add(std::shared_ptr<Hittable> obj);
 
 private:
     std::vector<std::shared_ptr<Hittable>> objects;
 };
+
+using Mesh = HittableList;

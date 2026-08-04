@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fstream>
+#include "geometry/Vector3.h"
 
 struct Color
 {
@@ -23,3 +24,5 @@ static const Color WHITE {255, 255, 255};
 static const Color RED   {255, 0, 0};
 static const Color GREEN {0, 255, 0};
 static const Color BLUE  {0, 0, 255};
+
+Color double_to_8bit(const Vector3& vec);

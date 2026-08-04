@@ -1,8 +1,8 @@
 #pragma once
 
-#include "geometry\Moveable.h"
-#include "geometry\Hittable.h"
-#include "utils\Color.h"
+#include "geometry/Moveable.h"
+#include "geometry/Hittable.h"
+#include "utils/Color.h"
 #include <fstream>
 
 const int MAX_COLOR_COMPONENT = 255;
@@ -23,13 +23,19 @@ public:
     unsigned width()    const  { return _width; }
     unsigned height()   const  { return 1/_ratio * _width; }
 
+    void set_width(const unsigned w) { _width = w; _ratio = (float)_width / height(); }
+    void set_height(const unsigned h) { _ratio = (float)_width / h; }
+
     void render(const HittableList& scene, std::ofstream& imageFile) const;
+    
+    static Color BG_COLOR;
 
-private:
+    Ray make_ray(const float x, const float y) const;
     Color ray_color(const Ray& ray, const HittableList& scene) const;
-    static const double MAX_RAY_DEPTH;
-
+    
 private:
+    static const double RAY_MAX_DIST;
+
     float _fov;
     float _ratio;
     unsigned _width;

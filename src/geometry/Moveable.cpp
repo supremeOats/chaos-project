@@ -1,4 +1,4 @@
-#include "geometry\Moveable.h"
+#include "geometry/Moveable.h"
 
 void Moveable::dolly(const float dist)
 {
@@ -52,6 +52,26 @@ void Moveable::roll(const float rad)
     Matrix<double, 3, 3> rotationMatrix(arr);
 
     localCoord = rotationMatrix * localCoord;
+}
+
+void Moveable::turn_table(const Point3 center, const float rad)
+{
+    Vector3 offset = _pos - center;          // vector from pivot to camera
+    double radius = offset.length();
+
+    double angle = std::atan2(offset.z(), offset.x());
+    angle += rad;
+
+    _pos = center + Vector3(
+        radius * std::cos(angle),
+        offset.y(),
+        radius * std::sin(angle)
+    );
+
+    this->pan(-1*angle);
+
+    // this->dolly(std::sin(rad));
+    // this->truck(std::cos(rad));
 }
 
 Vector3 operator*(const RTMatrix& mat, const Vector3& vec)

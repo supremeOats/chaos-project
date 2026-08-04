@@ -13,15 +13,28 @@ public:
     const Point3& pos() const { return _pos; }
     const Vector3& dir() const { return _dir; }
 
-    //Translations
+    //Forward & Backward | Move along Z axis
     void dolly(const float dist);
+
+    //Left & Right | Move along X axis
     void truck(const float dist);
+
+    //Up & Down | Move along Y axis
     void pedestal(const float dist);
 
-    //Rotations
+    //Up & Down | Rotate along X axis
     void tilt(const float rad);
+    
+    //Left & Right | Rotate along Y axis
     void pan(const float rad);
+    
+    //Around | Rotate along Y axis
     void roll(const float rad);
+
+    //Other
+    void turn_table(const Point3 center, const float rad);
+    void move_to(const Point3 newPos) { _pos = newPos; }
+    void set_rotation(const RTMatrix& matrix) { localCoord = matrix; }
 
     const RTMatrix& rotation_matrix() const { return localCoord; }
 
