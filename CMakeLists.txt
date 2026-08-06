@@ -17,6 +17,7 @@ add_executable(myproject
     src/geometry/Moveable.cpp
     
     src/renderer/Camera.cpp
+    src/renderer/Renderer.cpp
     
     src/utils/Color.cpp
 

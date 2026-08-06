@@ -30,6 +30,7 @@ public:
 	const T* get_data() const { return data; }
 
 	void to_file(const char* file) const;
+	void print() const;
 
 protected:
 	T* data;
@@ -144,3 +145,15 @@ Matrix<T, N, P> operator*(const Matrix<T, N, M>& lhs, const Matrix<T, M, P>& rhs
 	
 	return res;
 }
+
+template<typename T, const unsigned N, const unsigned M>
+void Matrix<T, N, M>::print() const
+{
+	for (size_t i = 0; i < N; ++i) {
+		for (size_t j = 0; j < M; ++j) {
+			std::cout << this->at(i, j) << ' ';
+		}
+		std::cout << '\n';
+	}
+}
+

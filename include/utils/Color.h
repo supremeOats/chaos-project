@@ -24,5 +24,19 @@ static const Color WHITE {255, 255, 255};
 static const Color RED   {255, 0, 0};
 static const Color GREEN {0, 255, 0};
 static const Color BLUE  {0, 0, 255};
+static const Color CYAN  {0, 255, 255};
+static const Color YELLOW  {255, 255, 0};
 
-Color double_to_8bit(const Vector3& vec);
+Color norm_vec_to_color(const Vector3& vec);
+Vector3 color_to_norm_vec(const Color& col);
+
+/*
+Color operator+ (const Color& lhs, const Color& rhs)
+{
+    return Color(
+        lhs.r && rhs.r,
+        lhs.g && rhs.g,
+        lhs.b && rhs.b
+    );
+}
+*/

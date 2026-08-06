@@ -19,6 +19,9 @@ public:
     virtual bool hit(const Ray& ray, const double rayMaxDist, Hit& hitData) const = 0;
 };
 
+// class Mesh : public Hittable
+// {};
+
 class HittableList : public Hittable
 {
 public:

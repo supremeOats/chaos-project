@@ -76,11 +76,13 @@ void Moveable::turn_table(const Point3 center, const float rad)
 
 Vector3 operator*(const RTMatrix& mat, const Vector3& vec)
 {
-    return Vector3(
+    Vector3 res(
         mat.at(0, 0) * vec.x() + mat.at(0, 1) * vec.y() + mat.at(0, 2) * vec.z(),
         mat.at(1, 0) * vec.x() + mat.at(1, 1) * vec.y() + mat.at(1, 2) * vec.z(),
         mat.at(2, 0) * vec.x() + mat.at(2, 1) * vec.y() + mat.at(2, 2) * vec.z()
     );
+
+    return res;
 }
 
 double Moveable::IDENTITY_VALS[9] = {
