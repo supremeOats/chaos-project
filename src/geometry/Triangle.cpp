@@ -35,7 +35,7 @@ void Triangle::update_norm()
     norm = normalized(v3);
 }
 
-bool Triangle::hit(const Ray& ray, const double rayMaxDist, Hit& hitData) const
+bool Triangle::hit(const Ray& ray, const Range& rayRange, Hit& hitData) const
 {    
     double rayNormDot = dot(norm, ray.direction());
 
@@ -44,7 +44,7 @@ bool Triangle::hit(const Ray& ray, const double rayMaxDist, Hit& hitData) const
 
     float dist = dot(norm, p[0] - ray.origin()) / rayNormDot;
 
-    if (dist <= rayMaxDist && !perpendicular(ray.direction(), norm)) {
+    if (dist >= rayRange.minDist && dist <= rayRange.maxDist && !perpendicular(ray.direction(), norm)) {
         Point3 intersectionPoint = ray.at(dist);
     
         if (in_triangle(intersectionPoint)) {

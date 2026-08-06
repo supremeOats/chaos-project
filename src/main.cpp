@@ -37,16 +37,16 @@ int main(int argc, char *argv[])
     std::ifstream sceneFile("scenes/" + fileName);
     
     std::string content(
-        (std::istreambuf_iterator<char>(sceneFile) ),
-        (std::istreambuf_iterator<char>()    ) );
-
-    //RapidJSON magic here
+        (std::istreambuf_iterator<char>(sceneFile)),
+        (std::istreambuf_iterator<char>()) 
+    );
 
     using namespace rapidjson;
 
     Document scene;
     scene.Parse(content.c_str());
 
+    //Scene setup
     Camera camera;
     HittableList world;
     LightsList lights;
@@ -57,15 +57,21 @@ int main(int argc, char *argv[])
         &lights
     });
 
-    std::cout << "\n# of objects: " << scene["objects"].Size() << '\n';
-
+    //Reading scene
     read_settings(scene["settings"], renderer);
     read_camera(scene["settings"], scene["camera"], camera);
     read_objects(scene["objects"], world);
-    read_lights(scene["lights"], lights);
+
+    if(scene.HasMember("lights")) {
+        read_lights(scene["lights"], lights);
+    }
 
     std::cout << "\nScene loaded\n";
 
+    std::cout << "# of objects: " << scene["objects"].Size() << '\n';
+    std::cout << "# of lights: " << scene["lights"].Size() << '\n';
+
+    //File creation & rendering
     std::string fName = "results/scene.ppm";
     std::ofstream ppmImage(fName, std::ios::binary | std::ios::trunc);
     

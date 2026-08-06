@@ -25,7 +25,7 @@ public:
     static Color BG_COLOR;
 
 private:
-    Vector3 shade(const PointLight& light, const Hit& record) const;
+    Vector3 shade(const PointLight& light, const Hit& record, const HittableList& world) const;
 
 private:
     float _fov;

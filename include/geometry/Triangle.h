@@ -13,7 +13,7 @@ public:
     const Vector3& normal() const { return norm; }
     float area() const;
 
-    bool hit(const Ray& ray, const double rayMaxDist, Hit& hitData) const override;
+    bool hit(const Ray& ray, const Range& rayRange, Hit& hitData) const override;
 
     const Point3& Triangle::operator[] (const int i) const;
 

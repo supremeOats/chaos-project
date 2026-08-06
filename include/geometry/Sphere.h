@@ -7,7 +7,7 @@ class ProceduralSphere : public Hittable
 {
 public:
     ProceduralSphere(const Point3& center, const float radius);
-    bool hit(const Ray& ray, const double rayMaxDist, Hit& hitData) const override;
+    bool hit(const Ray& ray, const Range& rayRange, Hit& hitData) const override;
 
 private:
     Point3 center;

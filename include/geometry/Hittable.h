@@ -11,12 +11,18 @@ struct Hit
     Point3 point;
 };
 
+struct Range
+{
+    double minDist;
+    double maxDist;
+};
+
 class Hittable
 {
 public:
     virtual ~Hittable() = default;
 
-    virtual bool hit(const Ray& ray, const double rayMaxDist, Hit& hitData) const = 0;
+    virtual bool hit(const Ray& ray, const Range& rayRange, Hit& hitData) const = 0;
 };
 
 // class Mesh : public Hittable
@@ -25,7 +31,7 @@ public:
 class HittableList : public Hittable
 {
 public:
-    bool hit(const Ray& ray, const double rayMaxDist, Hit& hitData) const override;
+    bool hit(const Ray& ray, const Range& rayRange, Hit& hitData) const override;
 
     void add(std::shared_ptr<Hittable> obj);
 

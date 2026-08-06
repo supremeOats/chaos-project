@@ -1,6 +1,7 @@
 #include "renderer/Camera.h"
 
 const double Camera::RAY_MAX_DIST = 100.0;
+const double SHADOW_BIAS = 0.01;
 Color Camera::BG_COLOR = WHITE;
 
 # define PI 3.14159265358979323846
@@ -17,8 +18,7 @@ Ray Camera::make_ray(const float x, const float y) const
     );
 }
 
-Vector3 Camera::shade(const PointLight& light, const Hit& record) const
-{
+Vector3 Camera::shade(const PointLight& light, const Hit& record, const HittableList& world) const {
     Vector3 lp = light.pos() - record.point;
     
     double lightVal = std::max(
@@ -26,9 +26,24 @@ Vector3 Camera::shade(const PointLight& light, const Hit& record) const
         dot(record.normal, normalized(lp))
     );
 
-    double lsRaduis = lp.length();
-    double lsArea = 4 * PI * lsRaduis * lsRaduis;
+    if(lightVal == 0) {
+        return Vector3(0, 0, 0);
+    }
 
+    double lsRaduis = lp.length();
+
+    //Cast shadow
+    Ray shadowRay(
+        record.point,
+        lp
+    );
+    Hit shadowHit;
+
+    if (world.hit(shadowRay, {SHADOW_BIAS, lsRaduis}, shadowHit)) {
+        return Vector3(0, 0, 0);
+    }
+
+    double lsArea = 4 * PI * lsRaduis * lsRaduis;
     lightVal *= light.intensity() / lsArea;
     
     Vector3 colorVec = color_to_norm_vec(light.color());
@@ -44,11 +59,11 @@ Color Camera::ray_color(const Ray& ray, const HittableList& world, const LightsL
 {
     Hit rec;
 
-    if (world.hit(ray, RAY_MAX_DIST, rec) && 0 < rec.t && rec.t < RAY_MAX_DIST) {
+    if (world.hit(ray, {0.0, RAY_MAX_DIST}, rec) && 0 < rec.t && rec.t < RAY_MAX_DIST) {
         Vector3 finalColorVec(0, 0, 0);
 
         for (const PointLight& lightSrc : lights) {
-            finalColorVec += shade(lightSrc, rec);
+            finalColorVec += shade(lightSrc, rec, world);
         }
 
         finalColorVec = Vector3(
@@ -60,5 +75,11 @@ Color Camera::ray_color(const Ray& ray, const HittableList& world, const LightsL
         return norm_vec_to_color(finalColorVec);
     }
     
-    return BG_COLOR;
+
+    Vector3 unit_direction = normalized(ray.direction());
+    auto a = 0.5*(unit_direction.y() + 1.0);
+    return norm_vec_to_color(
+        Vector3(1.0, 1.0, 1.0)*(1.0-a) +
+        color_to_norm_vec(BG_COLOR)*a
+    );
 }

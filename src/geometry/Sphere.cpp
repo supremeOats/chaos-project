@@ -4,7 +4,7 @@ ProceduralSphere::ProceduralSphere(const Point3& center, const float radius)
     : center(center), radius(radius)
 {}
 
-bool ProceduralSphere::hit(const Ray& ray, const double rayMaxDist, Hit& hitData) const
+bool ProceduralSphere::hit(const Ray& ray, const Range& rayRange, Hit& hitData) const
 {
     Vector3 p = center - ray.origin();
 
@@ -23,7 +23,7 @@ bool ProceduralSphere::hit(const Ray& ray, const double rayMaxDist, Hit& hitData
         (-1*b + discSqrt) / (2 * a)
     );
     
-    if (root > rayMaxDist)
+    if (root < rayRange.minDist || root > rayRange.maxDist)
         return false;
 
     //
