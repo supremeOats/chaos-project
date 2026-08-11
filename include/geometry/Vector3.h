@@ -6,6 +6,7 @@ class Vector3
 {
 public:
     Vector3() {}
+    Vector3(const double x) : Vector3(x, x, x) {}
     Vector3(const double x, const double y, const double z) : _x(x), _y(y), _z(z) {}
     
     double x() const { return _x; }

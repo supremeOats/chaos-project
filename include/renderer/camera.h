@@ -1,10 +1,11 @@
 #pragma once
 
 #include "geometry/Moveable.h"
-#include "geometry/Hittable.h"
+#include "geometry/Mesh.h"
 #include "light/Light.h"
-#include "utils/Color.h"
 #include <fstream>
+
+#include "shading/ShadingFunctions.h"
 
 const int MAX_COLOR_COMPONENT = 255;
 
@@ -20,12 +21,12 @@ public:
     float fov() const { return _fov; }
     
     Ray make_ray(const float x, const float y) const;
-    Color ray_color(const Ray& ray, const HittableList& scene, const LightsList& lights) const;
+    Color ray_color(const Ray& ray, const MeshList& scene, const LightsList& lights) const;
     
     static Color BG_COLOR;
 
 private:
-    Vector3 shade(const PointLight& light, const Hit& record, const HittableList& world) const;
+    Vector3 shade(const PointLight& light, const MeshHit& record, const MeshList& world) const;
 
 private:
     float _fov;

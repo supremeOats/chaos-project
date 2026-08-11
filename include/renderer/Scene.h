@@ -6,6 +6,6 @@
 struct Scene
 {
     Camera * camera;
-    HittableList * objects;
+    MeshList * objects;
     LightsList * lights;
 };

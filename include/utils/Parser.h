@@ -1,6 +1,6 @@
 #pragma once
 
-#include "geometry/Triangle.h"
+#include "geometry/Mesh.h"
 #include "renderer/Renderer.h"
 #include "Color.h"
 
@@ -36,6 +36,28 @@ RTMatrix read_RTMatrix(const Value& mat)
     return res;
 }
 
+void read_mesh(const Value& verts, const Value& triangles, Mesh& mesh)
+{
+    for (size_t i = 0; i < verts.Size(); i += 3) {
+        mesh.add_vert(Point3(
+            verts[i].GetDouble(),
+            verts[i+1].GetDouble(),
+            verts[i+2].GetDouble()
+        ));
+    }
+
+    for (size_t t = 0; t < triangles.Size(); t += 3) {
+        unsigned idxV0 = triangles[t].GetUint();
+        unsigned IdxV1 = triangles[t + 1].GetUint();
+        unsigned IdxV2 = triangles[t + 2].GetUint();
+
+        mesh.add_tri(MeshTriangle(idxV0, IdxV1, IdxV2));
+    }
+
+    mesh.update_vert_normals();
+}
+
+/*
 void read_geometry(const Value& verts, const Value& vertIndices, Mesh& mesh)
 {
     std::vector<Point3> vertArr; //(verts.Size() / 3);
@@ -58,22 +80,23 @@ void read_geometry(const Value& verts, const Value& vertIndices, Mesh& mesh)
             vertArr[IdxV2]
         );
 
-        mesh.add(std::make_shared<Triangle>(curr));
+        mesh.add(curr);
     }
 }
+*/
 
-void read_objects(const Value& objects, HittableList& world)
+void read_objects(const Value& objects, MeshList& world)
 {
     for (SizeType m = 0; m < objects.Size(); ++m)
     {
         Mesh mesh;
-        read_geometry(
+        read_mesh(
             objects[m]["vertices"],
             objects[m]["triangles"],
             mesh
         );
 
-        world.add(std::make_shared<Mesh>(mesh));
+        world.add(mesh);
     }
 }
 

@@ -30,6 +30,8 @@ static const Color YELLOW  {255, 255, 0};
 Color norm_vec_to_color(const Vector3& vec);
 Vector3 color_to_norm_vec(const Color& col);
 
+Color operator*(const Color& col, const Vector3& vec);
+
 /*
 Color operator+ (const Color& lhs, const Color& rhs)
 {

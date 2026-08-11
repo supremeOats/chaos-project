@@ -17,3 +17,12 @@ Vector3 color_to_norm_vec(const Color& col)
         (float)col.b / 255
     );
 }
+
+Color operator*(const Color& col, const Vector3& vec)
+{
+    return Color{
+        (unsigned char) std::min(255.0, (double)col.r * vec.x()),
+        (unsigned char) std::min(255.0, (double)col.g * vec.y()),
+        (unsigned char) std::min(255.0, (double)col.b * vec.z())
+    };
+}

@@ -1,5 +1,4 @@
 #include "renderer/Camera.h"
-#include "geometry/PrimitiveVolumes.h"
 #include <string>
 #include <sstream>
 #include <ctime>
@@ -48,7 +47,7 @@ int main(int argc, char *argv[])
 
     //Scene setup
     Camera camera;
-    HittableList world;
+    MeshList world;
     LightsList lights;
     
     Renderer renderer(Scene{
@@ -69,7 +68,7 @@ int main(int argc, char *argv[])
     std::cout << "\nScene loaded\n";
 
     std::cout << "# of objects: " << scene["objects"].Size() << '\n';
-    std::cout << "# of lights: " << scene["lights"].Size() << '\n';
+    std::cout << "# of lights: " << lights.size() << '\n';
 
     //File creation & rendering
     std::string fName = "results/scene.ppm";

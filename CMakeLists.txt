@@ -9,15 +9,13 @@ set(SOURCES main.cpp)
 add_executable(myproject
     src/main.cpp
 
-    src/geometry/Triangle.cpp
-    src/geometry/Plane.cpp
-    src/geometry/Sphere.cpp
     src/geometry/Vector3.cpp
-    src/geometry/Hittable.cpp
+    src/geometry/Mesh.cpp
     src/geometry/Moveable.cpp
     
     src/renderer/Camera.cpp
     src/renderer/Renderer.cpp
+    src/renderer/shading/ShadingFunctions.cpp
     
     src/utils/Color.cpp
 
