@@ -17,13 +17,15 @@ void load_scene(const Document& scene, Camera& camera, MeshList& world, LightsLi
         read_lights(scene["lights"], lights);
     }
 
+    #ifdef DEBUG
     std::cout << "\nScene loaded\n";
+    #endif
 }
 
 int main(int argc, char *argv[])
 {
     if (argc != 3) {
-        std::cout << "Scene input file and image output file must be given.";
+        std::cerr << "Scene input file and image output file must be given.";
         return 1;
     }
 
@@ -58,24 +60,26 @@ int main(int argc, char *argv[])
 
     load_scene(scene, camera, world, lights, materials, renderer);
 
+    #ifdef DEBUG
     std::cout << "# of objects: " << scene["objects"].Size() << '\n';
     std::cout << "# of lights: " << lights.size() << '\n';
     std::cout << "# of materials: " << materials.size() << '\n';
+    std::cout << "W: " << renderer.width() << "\tH: " << renderer.height() << '\n';
+    #endif
 
-    //File creation & rendering
     std::ofstream ppmImage(outputImageName, std::ios::binary | std::ios::trunc);
     
     if(ppmImage.is_open()) {
-        std::cout << "W: " << renderer.width() << "\tH: " << renderer.height() << '\n';
-
         renderer.render(ppmImage);
         ppmImage.close();
     } else {
-        std::cout << "Output file cannot be opened";
+        std::cerr << "Output file cannot be opened";
         return 1;
     }
 
+    #ifdef DEBUG
     std::cout << "\nImage rendered\n";
+    #endif
 
     return 0;
 }

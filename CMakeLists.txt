@@ -15,7 +15,6 @@ add_executable(myproject
     
     src/renderer/Camera.cpp
     src/renderer/Renderer.cpp
-    src/renderer/shading/ShadingFunctions.cpp
     
     src/utils/Color.cpp
     src/utils/Parser.cpp
