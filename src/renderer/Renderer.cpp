@@ -19,7 +19,7 @@ void Renderer::render(std::ofstream& imageFile) const
 
             Ray ray = scene.camera->make_ray(x, y);
 
-            imageFile << scene.camera->ray_color(ray, *scene.objects, *scene.lights);
+            imageFile << scene.camera->ray_color(ray, *scene.objects, *scene.lights, *scene.materials, 0);
         }
 
         if(row % 100 == 0)

@@ -9,6 +9,7 @@ struct ShadeContext
     MeshHit const* hitRec;
     MeshList const* objects;
     LightsList const* lights;
+    MaterialList const * materials;
 };
 
 

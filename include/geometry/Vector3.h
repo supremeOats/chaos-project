@@ -38,6 +38,7 @@ bool perpendicular(const Vector3& lhs, const Vector3& rhs);
 
 double dot(const Vector3& lhs, const Vector3& rhs);
 Vector3 cross(const Vector3& lhs, const Vector3& rhs);
+Vector3 component_wise(const Vector3& lhs, const Vector3& rhs);
 
 Vector3 normalized(const Vector3& vec);
 

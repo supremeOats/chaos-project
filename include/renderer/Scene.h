@@ -8,4 +8,5 @@ struct Scene
     Camera * camera;
     MeshList * objects;
     LightsList * lights;
+    MaterialList * materials;
 };

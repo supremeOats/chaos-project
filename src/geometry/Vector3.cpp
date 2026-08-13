@@ -107,6 +107,15 @@ Vector3 cross(const Vector3& lhs, const Vector3& rhs)
     };
 }
 
+Vector3 component_wise(const Vector3& lhs, const Vector3& rhs)
+{
+    return Vector3(
+        lhs.x() * rhs.x(),
+        lhs.y() * rhs.y(),
+        lhs.z() * rhs.z()
+    );
+}
+
 Vector3 normalized(const Vector3& vec)
 {
     return vec / vec.length();

@@ -18,9 +18,9 @@ add_executable(myproject
     src/renderer/shading/ShadingFunctions.cpp
     
     src/utils/Color.cpp
+    src/utils/Parser.cpp
 
     include/utils/Matrix.h
-    include/utils/Parser.h
 )
 
 target_include_directories(myproject PRIVATE

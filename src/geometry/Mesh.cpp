@@ -12,10 +12,8 @@ bool Mesh::hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) const
             if (currHit.t > rayRange.minDist && currHit.t < closest) {                
                 closest = currHit.t;
                 
-                hitData.t = currHit.t;
-                hitData.point = currHit.point;
-                hitData.normal = currHit.normal;
-                hitData.pointNormal = currHit.pointNormal;
+                hitData = currHit;
+                hitData.materialIdx = materialIdx;
 
                 successfulHit = true;
             }
@@ -35,6 +33,11 @@ void Mesh::add_tri(const MeshTriangle& tri)
 {
     triangles.push_back(tri);
     update_triangle_normal(triangles[triangles.size()-1]);
+}
+
+void Mesh::set_material(const int idx)
+{
+    materialIdx = idx;
 }
 
 void Mesh::update_normals()
@@ -100,6 +103,11 @@ const MeshTriangle& Mesh::get_tri(const int idx) const
 const Vector3& Mesh::get_vert_norm(const int idx) const
 {
     return vertNorms[idx];
+}
+
+int Mesh::get_material_idx() const
+{
+    return materialIdx;
 }
 
 //MeshTriangle

@@ -3,7 +3,7 @@
 #include "geometry\Vector3.h"
 #include "utils\Matrix.h"
 
-#define RTMatrix Matrix<double, 3, 3>
+using RTMatrix = Matrix<double, 3, 3>;
 
 class Moveable
 {

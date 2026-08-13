@@ -10,9 +10,12 @@ Color ray_trace(const ShadeContext& context)
     for (const PointLight& lightSrc : *context.lights) {
         Vector3 lp = lightSrc.pos() - context.hitRec->point;
         
+        Material hitMaterial = context.materials->at(context.hitRec->materialIdx);
+        Vector3 hitNormal = hitMaterial.smooth() ? context.hitRec->pointNormal : context.hitRec->normal;
+
         double lightVal = std::max(
             0.0,
-            dot(context.hitRec->pointNormal, normalized(lp))
+            dot(hitNormal, normalized(lp))
         );
 
         if(lightVal == 0) {
@@ -32,10 +35,14 @@ Color ray_trace(const ShadeContext& context)
             return BLACK; // * Vector3(1/shadowHit.t);
         }
 
+        //Light contribution
         double lsArea = 4 * PI * lsRaduis * lsRaduis;
         lightVal *= lightSrc.intensity() / lsArea;
 
-        Vector3 colorVec = color_to_norm_vec(lightSrc.color());
+        Vector3 colorVec = component_wise(
+            color_to_norm_vec(lightSrc.color()),
+            hitMaterial.albedo()
+        );
 
         finalColorVec += color_to_norm_vec(lightSrc.color()) * lightVal;
     }

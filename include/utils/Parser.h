@@ -8,123 +8,22 @@
 
 using namespace rapidjson;
 
-Vector3 read_vec3(const Value& vec)
-{
-    return Vector3(
-        vec[0].GetDouble(),
-        vec[1].GetDouble(),
-        vec[2].GetDouble()
-    );
-}
+Vector3 read_vec3(const Value& vec);
 
-Color read_color(const Value& col)
-{
-    Vector3 v = read_vec3(col);
-    return norm_vec_to_color(v);
-}
+Color read_color(const Value& col);
 
-RTMatrix read_RTMatrix(const Value& mat)
-{
-    RTMatrix res;
-    
-    for (size_t i = 0; i < 3; ++i) {
-        for (size_t j = 0; j < 3; ++j) {
-            res.at(i, j) = mat[i*3 + j].GetDouble();
-        }
-    }
-    
-    return res;
-}
+RTMatrix read_RTMatrix(const Value& mat);
 
-void read_mesh(const Value& verts, const Value& triangles, Mesh& mesh)
-{
-    for (size_t i = 0; i < verts.Size(); i += 3) {
-        mesh.add_vert(Point3(
-            verts[i].GetDouble(),
-            verts[i+1].GetDouble(),
-            verts[i+2].GetDouble()
-        ));
-    }
+Material read_material(const Value& material);
 
-    for (size_t t = 0; t < triangles.Size(); t += 3) {
-        unsigned idxV0 = triangles[t].GetUint();
-        unsigned IdxV1 = triangles[t + 1].GetUint();
-        unsigned IdxV2 = triangles[t + 2].GetUint();
+void read_material_list(const Value& materials, MaterialList& materialsList);
 
-        mesh.add_tri(MeshTriangle(idxV0, IdxV1, IdxV2));
-    }
+void read_mesh(const Value& meshData, Mesh& mesh);
 
-    mesh.update_vert_normals();
-}
+void read_objects(const Value& objects, MeshList& world);
 
-/*
-void read_geometry(const Value& verts, const Value& vertIndices, Mesh& mesh)
-{
-    std::vector<Point3> vertArr; //(verts.Size() / 3);
-    for (size_t i = 0; i < verts.Size(); i += 3) {
-        vertArr.push_back(Vector3(
-            verts[i].GetDouble(),
-            verts[i+1].GetDouble(),
-            verts[i+2].GetDouble()
-        ));
-    }
+void read_settings(const Value& settings, Renderer& renderer);
 
-    for (size_t t = 0; t < vertIndices.Size(); t += 3) {
-        unsigned idxV0 = vertIndices[t].GetUint();
-        unsigned IdxV1 = vertIndices[t + 1].GetUint();
-        unsigned IdxV2 = vertIndices[t + 2].GetUint();
+void read_camera(const Value& settings, const Value& camParams, Camera& cam);
 
-        Triangle curr(
-            vertArr[idxV0],
-            vertArr[IdxV1],
-            vertArr[IdxV2]
-        );
-
-        mesh.add(curr);
-    }
-}
-*/
-
-void read_objects(const Value& objects, MeshList& world)
-{
-    for (SizeType m = 0; m < objects.Size(); ++m)
-    {
-        Mesh mesh;
-        read_mesh(
-            objects[m]["vertices"],
-            objects[m]["triangles"],
-            mesh
-        );
-
-        world.add(mesh);
-    }
-}
-
-void read_settings(const Value& settings, Renderer& renderer)
-{
-    renderer.set_width(settings["image_settings"]["width"].GetUint());
-    renderer.set_height(settings["image_settings"]["height"].GetUint());
-
-}
-
-void read_camera(const Value& settings, const Value& camParams, Camera& cam)
-{
-    if (settings.HasMember("background_color"))
-        cam.BG_COLOR = read_color(settings["background_color"]);
-    
-    Point3 pos = read_vec3(camParams["position"]);
-    cam.move_to(pos);
-
-    cam.set_rotation(read_RTMatrix(camParams["matrix"]));
-}
-
-void read_lights(const Value& lightsParams, LightsList& lights)
-{
-    for (size_t i = 0; i < lightsParams.Size(); ++i) {
-        lights.push_back(PointLight(
-            read_vec3(lightsParams[i]["position"]),
-            (lightsParams[i].HasMember("color")) ? read_color(lightsParams[i]["color"]) : WHITE,
-            lightsParams[i]["intensity"].GetFloat()
-        ));
-    }    
-}
+void read_lights(const Value& lightsParams, LightsList& lights);
