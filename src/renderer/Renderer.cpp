@@ -2,6 +2,8 @@
 
 const double Renderer::RAY_MAX_DIST = 100.0;
 const double SHADOW_BIAS = 0.01;
+const double REFLECTION_BIAS = 0.01;
+const double REFRACTION_BIAS = 0.01;
 const double PI = 3.14159265358979323846;
 
 void Renderer::render(std::ofstream& imageFile) const
@@ -23,7 +25,7 @@ void Renderer::render(std::ofstream& imageFile) const
 
             Ray ray = scene.camera->create_ray(x, y);
 
-            imageFile << ray_color(ray, 0);
+            imageFile << norm_vec_to_color(ray_color(ray, 0));
         }
 
         #ifdef DEBUG
@@ -33,8 +35,12 @@ void Renderer::render(std::ofstream& imageFile) const
     }
 }
 
-Color Renderer::ray_color(const Ray& ray, const int rayDepth) const
+Vector3 Renderer::ray_color(const Ray& ray, const int rayDepth) const
 {
+    if (rayDepth >= RAY_MAX_DEPTH) {
+        return Vector3(0.0);
+    }
+
     MeshHit rec;
 
     const MeshList& world = *scene.objects;
@@ -44,28 +50,42 @@ Color Renderer::ray_color(const Ray& ray, const int rayDepth) const
         Vector3 finalColorVec(0, 0, 0);
 
         Material hitMaterial = materials[rec.materialIdx];
-        Vector3 hitNormal = hitMaterial.smooth() ? rec.pointNormal : rec.normal;
         
-        if (hitMaterial.type() == REFLECTIVE && rayDepth < RAY_MAX_DEPTH) {
-            finalColorVec += shade_reflective(ray, rec, rayDepth);
-        }
-        else if (hitMaterial.type() == REFLECTIVE && rayDepth < RAY_MAX_DEPTH) {
-            finalColorVec += shade_refractive(ray, rec, rayDepth);
-        }
-        else {
-            finalColorVec += shade_diffuse(ray, rec);
-        }
-        
-        finalColorVec = Vector3(
-            std::min(1.0, finalColorVec.x()),
-            std::min(1.0, finalColorVec.y()),
-            std::min(1.0, finalColorVec.z())
-        );
+        switch (hitMaterial.type())
+        {
+        case DIFFUSE:
+            finalColorVec = shade_diffuse(ray, rec);
+            break;
 
-        return norm_vec_to_color(finalColorVec);
+        case REFLECTIVE:
+            finalColorVec = shade_reflective(ray, rec, rayDepth);
+            break;
+        
+        case REFRACTIVE:
+            finalColorVec = shade_refractive(ray, rec, rayDepth);
+            break;
+        
+        default: 
+            break;
+        }
+
+        // if (hitMaterial.type() == REFLECTIVE) {
+        //     finalColorVec = shade_reflective(ray, rec, rayDepth);
+        // }
+        // else if (hitMaterial.type() == REFRACTIVE) {
+        //     finalColorVec = shade_refractive(ray, rec, rayDepth);
+        // }
+        // else if (hitMaterial.type() == CONSTANT) {
+        //     finalColorVec = shade_constant(hitMaterial);
+        // }
+        // else {
+        //     finalColorVec = shade_diffuse(ray, rec);
+        // }
+        
+        return clamp(finalColorVec, {-1.0, 1.0});
     }
     
-    return norm_vec_to_color(gradient_bg(ray));
+    return gradient_bg(ray);
 }
 
 Vector3 Renderer::shade_diffuse(const Ray& ray, const MeshHit& rec) const
@@ -114,20 +134,61 @@ Vector3 Renderer::shade_diffuse(const Ray& ray, const MeshHit& rec) const
 
 Vector3 Renderer::shade_reflective(const Ray& ray, const MeshHit& rec, const int rayDepth) const
 {
+    Material& hitMaterial = scene.materials->at(rec.materialIdx);
+    Vector3 hitNormal = hitMaterial.smooth() ? rec.pointNormal : rec.normal;
+
     Vector3 materialAlbedo = scene.materials->at(rec.materialIdx).albedo();
 
-    Ray reflectionRay(
-        rec.point,
-        ray.direction() - rec.normal * 2 * dot(rec.normal, ray.direction())
+    Ray reflected(
+        rec.point + hitNormal * REFLECTION_BIAS,
+        ray.direction() - hitNormal * 2 * dot(hitNormal, ray.direction())
     );
     
-    Color currColor = ray_color(reflectionRay, rayDepth+1);
-    return component_wise(color_to_norm_vec(currColor), materialAlbedo);
+    return component_wise(materialAlbedo, ray_color(reflected, rayDepth+1));
 }
 
 Vector3 Renderer::shade_refractive(const Ray& ray, const MeshHit& rec, const int rayDepth) const
 {
-    double ior1, ior2;
+    Material& hitMaterial = scene.materials->at(rec.materialIdx);
+    Vector3 hitNormal = hitMaterial.smooth() ? rec.pointNormal : rec.normal;
+    
+    double ior1 = ray.ior, ior2 = hitMaterial.ior();
+
+    if (dot(ray.direction(), hitNormal) > 0.0) {
+        std::swap(ior1, ior2);
+        hitNormal *= -1;
+    }
+
+    double cosA = -1 * dot(ray.direction(), hitNormal);
+    double sinA = std::sqrt(std::max(0.0, 1.0 - cosA * cosA));
+    double sinB = std::sqrt(1 - cosA * cosA) * ior1 / ior2;
+    double cosB = std::sqrt(1 - sinB * sinB);
+
+    Ray reflected(
+        rec.point + hitNormal * REFLECTION_BIAS,
+        ray.direction() + hitNormal * cosA * 2,
+        ior1
+    );
+
+    //Critical angle
+    if (sinA > ior2/ior1) {
+        return ray_color(reflected, rayDepth + 1);
+    }
+
+    Vector3 C = normalized(ray.direction() + hitNormal * cosA);
+    Vector3 B = C * sinB;
+    Vector3 A = hitNormal * -1 * cosB;
+
+    Ray refracted(
+        rec.point - hitNormal * REFRACTION_BIAS,
+        A + B,
+        ior2
+    );
+
+    double fresnelCoef = 0.5 * std::pow((1.0 - cosA), 5.0);
+
+    return  fresnelCoef         * ray_color(reflected, rayDepth + 1)
+            + (1 - fresnelCoef) * ray_color(refracted, rayDepth + 1);
 
     // check if entering or leaving refractive material
     //     if leabing then swap IORs and flip hit normal & proceed
@@ -135,8 +196,11 @@ Vector3 Renderer::shade_refractive(const Ray& ray, const MeshHit& rec, const int
     // check if angle between ray and normal is below critical
     //     if yes then build refraction ray & reflection ray & trace them aka return
     //     if not then build relection rat & trace it aka return
+}
 
-    return Vector3(0.0);
+Vector3 Renderer::shade_constant(const Material& material) const
+{
+    return material.albedo();
 }
 
 bool Renderer::in_shadow(const MeshHit& rec, const Vector3 lightDir, const double lightDist) const
@@ -146,9 +210,15 @@ bool Renderer::in_shadow(const MeshHit& rec, const Vector3 lightDir, const doubl
         rec.point,
         normalized(lightDir)
     );
-    MeshHit shadowHit;
 
-    return scene.objects->hit(shadowRay, {SHADOW_BIAS, lightDist}, shadowHit);
+    MeshHit shadowHit;
+    
+    if(scene.objects->hit(shadowRay, {SHADOW_BIAS, lightDist}, shadowHit)) {
+        Material& material = scene.materials->at(shadowHit.materialIdx);
+        return material.type() != REFRACTIVE;
+    }
+    
+    return false;
 }
 
 Vector3 Renderer::gradient_bg(const Ray& ray) const

@@ -32,18 +32,24 @@ Material read_material(const Value& material)
 {
     MaterialType type;
 
-    if (material["type"] == "reflective") {
+    if (material["type"] == "diffuse") {
+        type = MaterialType::DIFFUSE;
+    } else if (material["type"] == "reflective") {
         type = MaterialType::REFLECTIVE;
     } else if (material["type"] == "refractive") {
         type = MaterialType::REFRACTIVE;
-    } else {
-        type = MaterialType::DIFFUSE;
+    } else  if (material["type"] == "constant") {
+        type = MaterialType::CONSTANT;
     }
+
+    Vector3 albedo = material.HasMember("albedo") ? read_vec3(material["albedo"]) : Vector3(1.0);
+    double ior = material.HasMember("ior") ? material["ior"].GetDouble() : 1.0;
 
     return Material(
         type,
-        read_vec3(material["albedo"]),
-        material["smooth_shading"].GetBool()
+        albedo,
+        material["smooth_shading"].GetBool(),
+        ior
     );
 }
 

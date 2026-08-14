@@ -5,7 +5,7 @@
 class Renderer
 {
 public:
-    Renderer(const Scene scene, const int rayDepth = 3)
+    Renderer(const Scene scene, const int rayDepth = 4)
         : scene(scene), RAY_MAX_DEPTH(rayDepth) {}
     
     void render(std::ofstream& imageFile) const;
@@ -18,11 +18,12 @@ public:
     void set_height(const unsigned h) { _height = h; }
 
 private:
-    Color Renderer::ray_color(const Ray& ray, const int rayDepth) const;
+    Vector3 Renderer::ray_color(const Ray& ray, const int rayDepth) const;
 
     Vector3 shade_diffuse(const Ray& ray, const MeshHit& rec) const;
     Vector3 shade_reflective(const Ray& ray, const MeshHit& rec, const int rayDepth) const;
     Vector3 shade_refractive(const Ray& ray, const MeshHit& rec, const int rayDepth) const;
+    Vector3 shade_constant(const Material& material) const;
 
     bool in_shadow(const MeshHit& rec, const Vector3 lightDir, const double lightDist) const;
 

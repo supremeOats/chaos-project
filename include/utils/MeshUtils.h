@@ -12,12 +12,6 @@ struct MeshHit
     int materialIdx;
 };
 
-struct Range
-{
-    double minDist;
-    double maxDist;
-};
-
 struct MeshTriangle
 {
     MeshTriangle(const int v0, const int v1, const int v2);

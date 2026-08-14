@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(SOURCES main.cpp)
 
-add_executable(myproject
+add_executable(raytracer
     src/main.cpp
 
     src/geometry/Vector3.cpp
@@ -22,6 +22,8 @@ add_executable(myproject
     include/utils/Matrix.h
 )
 
-target_include_directories(myproject PRIVATE
+target_include_directories(raytracer PRIVATE
     ${CMAKE_SOURCE_DIR}/include
 )
+
+target_compile_definitions(raytracer PRIVATE $<$<CONFIG:Debug>:DEBUG>)

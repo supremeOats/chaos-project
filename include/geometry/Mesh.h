@@ -20,14 +20,13 @@ public:
     void update_normals();
     void update_vert_normals();
 
-    private:
+private:
     bool hit_triangle(const Ray& ray, const MeshTriangle& tri, const Range& rayRange, MeshHit& hitData) const;
     bool in_triangle(const Point3& p, const MeshTriangle& tri) const;
     
     Vector3 interpolated_normal(const Point3& p, const MeshTriangle& tri) const;
     void update_triangle_normal(MeshTriangle& tri);
     
-
 private:
     std::vector<Point3> vertices;
     std::vector<MeshTriangle> triangles;

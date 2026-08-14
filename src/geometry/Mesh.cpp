@@ -2,14 +2,14 @@
 
 bool Mesh::hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) const
 {
-    double closest = rayRange.maxDist;
+    double closest = rayRange.maxVal;
     MeshHit currHit = {hitData.t, hitData.normal, hitData.point};
 
     bool successfulHit = false;
 
     for (const auto& tri : triangles) {        
         if (hit_triangle(ray, tri, rayRange, currHit)) {
-            if (currHit.t > rayRange.minDist && currHit.t < closest) {                
+            if (currHit.t > rayRange.minVal && currHit.t < closest) {                
                 closest = currHit.t;
                 
                 hitData = currHit;
@@ -64,7 +64,7 @@ void Mesh::update_vert_normals()
 
 bool MeshList::hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) const
 {   
-    double closest = rayRange.maxDist;
+    double closest = rayRange.maxVal;
     MeshHit currHit = hitData;
 
     bool successfulHit = false;
@@ -72,7 +72,7 @@ bool MeshList::hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) cons
     for (const auto& obj : objects) {
         
         if (obj.hit(ray, rayRange, currHit)) {
-            if (currHit.t > rayRange.minDist && currHit.t < closest) {                
+            if (currHit.t > rayRange.minVal && currHit.t < closest) {                
                 closest = currHit.t;
                 
                 hitData = currHit;
@@ -132,13 +132,13 @@ bool Mesh::hit_triangle(const Ray& ray, const MeshTriangle& tri, const Range& ra
 {
     double rayNormDot = dot(tri.normal, ray.direction());
 
-    if (0 <= rayNormDot)
-        return false;
+    // if (0 <= rayNormDot)
+    //     return false;
 
     float dist = dot(tri.normal, vertices[tri.v[0]] - ray.origin()) / rayNormDot;
     
-    if (dist >= rayRange.minDist &&
-        dist <= rayRange.maxDist &&
+    if (dist >= rayRange.minVal &&
+        dist <= rayRange.maxVal &&
         !perpendicular(ray.direction(), tri.normal))
     {
         Point3 intersectionPoint = ray.at(dist);
@@ -192,10 +192,13 @@ Vector3 Mesh::interpolated_normal(const Point3& p, const MeshTriangle& tri) cons
     
     float u = areaA / totalArea;
     float v = areaB / totalArea;
-    
-    return  vertNorms[tri.v[1]] * u +
+ 
+    Vector3 interpolatedVec =
+            vertNorms[tri.v[1]] * u +
             vertNorms[tri.v[2]] * v +
             vertNorms[tri.v[0]] * (1 - u - v);
+
+    return normalized(interpolatedVec);
 }
 
 float triangle_area(const Point3 p0, const Point3 p1, const Point3 p2)

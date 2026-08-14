@@ -63,6 +63,11 @@ Vector3 operator* (const Vector3& vec, const double scalar)
     };
 }
 
+Vector3 operator* (const double scalar, const Vector3& vec)
+{
+    return vec * scalar;
+}
+
 Vector3 operator/ (const Vector3& vec, const double scalar)
 {
     return {
@@ -119,4 +124,21 @@ Vector3 component_wise(const Vector3& lhs, const Vector3& rhs)
 Vector3 normalized(const Vector3& vec)
 {
     return vec / vec.length();
+}
+
+Vector3 clamp(const Vector3& vec, const Range& range)
+{
+    Vector3 res(
+        std::min(range.maxVal, vec.x()),
+        std::min(range.maxVal, vec.y()),
+        std::min(range.maxVal, vec.z())
+    );
+
+    res = Vector3(
+        std::max(res.x(), range.minVal),
+        std::max(res.y(), range.minVal),
+        std::max(res.z(), range.minVal)
+    );
+
+    return res;
 }

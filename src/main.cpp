@@ -12,7 +12,6 @@ void load_scene(const Document& scene, Camera& camera, MeshList& world, LightsLi
     read_camera(scene["settings"], scene["camera"], camera);
     read_objects(scene["objects"], world);
     read_material_list(scene["materials"], materials);
-
     if(scene.HasMember("lights")) {
         read_lights(scene["lights"], lights);
     }

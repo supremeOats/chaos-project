@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <algorithm>
 
 class Vector3
 {
@@ -27,9 +28,16 @@ private:
 };
 
 //Utility
+struct Range
+{
+    double minVal;
+    double maxVal;
+};
+
 Vector3 operator+ (const Vector3& lhs, const Vector3& rhs);
 Vector3 operator- (const Vector3& lhs, const Vector3& rhs);
 Vector3 operator* (const Vector3& vec, const double scalar);
+Vector3 operator* (const double scalar, const Vector3& vec);
 Vector3 operator/ (const Vector3& vec, const double scalar);
 
 bool operator== (const Vector3& lhs, const Vector3& rhs);
@@ -41,5 +49,7 @@ Vector3 cross(const Vector3& lhs, const Vector3& rhs);
 Vector3 component_wise(const Vector3& lhs, const Vector3& rhs);
 
 Vector3 normalized(const Vector3& vec);
+
+Vector3 clamp(const Vector3& vec, const Range& range);
 
 using Point3 = Vector3;
