@@ -18,6 +18,7 @@ add_executable(raytracer
     
     src/utils/Color.cpp
     src/utils/Parser.cpp
+    src/utils/ImageBuffer.cpp
 
     include/utils/Matrix.h
 )

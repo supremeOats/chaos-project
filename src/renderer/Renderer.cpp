@@ -6,7 +6,7 @@ const double REFLECTION_BIAS = 0.01;
 const double REFRACTION_BIAS = 0.01;
 const double PI = 3.14159265358979323846;
 
-void Renderer::render(std::ofstream& imageFile) const
+void Renderer::render_single_thread(std::ofstream& imageFile) const
 {
     imageFile << "P6 ";
     imageFile << _width << ' ' << _height << ' ';
@@ -32,6 +32,80 @@ void Renderer::render(std::ofstream& imageFile) const
         if(row % 100 == 0)
             std::cout << 100 * (float)(row) / (_height) << "%\n";
         #endif
+    }
+}
+
+void Renderer::render(const char* imageFileName) const
+{
+    std::ofstream imageFile(imageFileName, std::ios::binary | std::ios::trunc);
+    imageFile << "P6 ";
+    imageFile << _width << ' ' << _height << ' ';
+    imageFile << MAX_COLOR_COMPONENT << '\n';
+
+    const int BUCKET_SIZE = 100;
+
+    //schedule buckets
+    struct Bucket { PixelPos start, end; };
+    std::vector<Bucket> buckets;
+
+    for (unsigned i = 0; i < _height; i += BUCKET_SIZE) {
+        for (unsigned j = 0; j < _width; j += BUCKET_SIZE) {
+            PixelPos start {i, j};
+            PixelPos end {
+                std::min(i + BUCKET_SIZE, _height),
+                std::min(j + BUCKET_SIZE, _width)
+            };
+            buckets.push_back(Bucket{start, end});
+        }
+    }
+
+    std::cout << "buckets assigned: " << buckets.size() << '\n';
+
+    std::atomic<std::size_t> nextBucket{0};
+    unsigned numThreads = std::thread::hardware_concurrency();
+    if (numThreads == 0) numThreads = 4; // fallback if detection fails
+
+    std::vector<std::thread> pool;
+    for (unsigned t = 0; t < numThreads; ++t) {
+        pool.emplace_back([&]() {
+            std::size_t idx;
+            while ((idx = nextBucket.fetch_add(1, std::memory_order_relaxed)) < buckets.size()) {
+                const Bucket& b = buckets[idx];
+                render_region(b.start, b.end);
+            }
+        });
+    }
+
+    for (auto& th : pool) {
+        th.join();
+    }
+
+    
+    image->write_to_file(imageFile);
+
+    imageFile.close();
+}
+
+void Renderer::render_region(const PixelPos& start, const PixelPos& end) const
+{
+    if (start.x > end.x || start.y > end.y) {
+        throw std::invalid_argument("end point of a region should be bottom-right to start point");
+    }
+
+    for (size_t row = start.x; row < end.x; ++row) {
+        for (size_t col = start.y; col < end.y; ++col) {
+            float x = col + 0.5;
+            x /= _width;
+            x -= 0.5;
+            x *= ratio();
+
+            float y = row + 0.5;
+            y /= _height;
+            y -= 0.5;
+
+            Ray ray = scene.camera->create_ray(x, y);
+            image->at(col, row) = norm_vec_to_color(ray_color(ray, 0));
+        }
     }
 }
 
@@ -227,3 +301,9 @@ Vector3 Renderer::gradient_bg(const Ray& ray) const
     auto a = 0.5*(unit_direction.y() + 1.0);
     return Vector3(1.0, 1.0, 1.0)*(1.0-a) + color_to_norm_vec(scene.camera->BG_COLOR)*a;
 }
+
+void Renderer::init_buffer()
+{
+    image = std::make_unique<ImageBuffer> (_height, _width);
+}
+
