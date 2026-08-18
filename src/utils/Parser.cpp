@@ -102,9 +102,10 @@ void read_objects(const Value& objects, MeshList& world)
 
 void read_settings(const Value& settings, Renderer& renderer)
 {
-    renderer.set_width(settings["image_settings"]["width"].GetUint());
-    renderer.set_height(settings["image_settings"]["height"].GetUint());
-    renderer.init_buffer();
+    renderer.set_dimentions(
+        settings["image_settings"]["width"].GetUint(),
+        settings["image_settings"]["height"].GetUint()
+    );
 }
 
 void read_camera(const Value& settings, const Value& camParams, Camera& cam)

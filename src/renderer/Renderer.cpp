@@ -6,6 +6,13 @@ const double REFLECTION_BIAS = 0.01;
 const double REFRACTION_BIAS = 0.01;
 const double PI = 3.14159265358979323846;
 
+void Renderer::set_dimentions(const unsigned w, const unsigned h)
+{
+    set_width(w);
+    set_height(h);
+    init_buffer();
+}
+
 void Renderer::render_single_thread(std::ofstream& imageFile) const
 {
     imageFile << "P6 ";

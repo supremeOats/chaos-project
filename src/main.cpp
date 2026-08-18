@@ -1,6 +1,6 @@
 #include <sstream>
 #include <ctime>
-#include <math.h>
+#include <chrono>
 
 #include "renderer/Camera.h"
 #include "utils/Parser.h"
@@ -66,16 +66,18 @@ int main(int argc, char *argv[])
     std::cout << "W: " << renderer.width() << "\tH: " << renderer.height() << '\n';
     #endif
 
-    std::ofstream ppmImage(outputImageName, std::ios::binary | std::ios::trunc);
-    
-    if(ppmImage.is_open()) {
-        renderer.render(ppmImage);
-        ppmImage.close();
-    } else {
-        std::cerr << "Output file cannot be opened";
-        return 1;
-    }
+    //Single-threaded
+    using namespace std::chrono;
+    high_resolution_clock::time_point start = high_resolution_clock::now();
 
+    renderer.render(outputImageName.c_str());
+
+    high_resolution_clock::time_point end = high_resolution_clock::now();
+    
+    microseconds duration = duration_cast<microseconds>(end - start);    
+    double seconds = duration.count() / 1'000'000.0;
+    std::cout << "Time: " << seconds << "s\n";
+    
     #ifdef DEBUG
     std::cout << "\nImage rendered\n";
     #endif
