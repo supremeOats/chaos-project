@@ -4,6 +4,7 @@ const double Renderer::RAY_MAX_DIST = 100.0;
 const double SHADOW_BIAS = 0.01;
 const double REFLECTION_BIAS = 0.01;
 const double REFRACTION_BIAS = 0.01;
+const int BUCKET_SIZE = 16;
 const double PI = 3.14159265358979323846;
 
 void Renderer::set_dimentions(const unsigned w, const unsigned h)
@@ -48,8 +49,6 @@ void Renderer::render(const char* imageFileName) const
     imageFile << "P6 ";
     imageFile << _width << ' ' << _height << ' ';
     imageFile << MAX_COLOR_COMPONENT << '\n';
-
-    const int BUCKET_SIZE = 100;
 
     //schedule buckets
     struct Bucket { PixelPos start, end; };

@@ -14,6 +14,10 @@ public:
     double y() const { return _y; }
     double z() const { return _z; }
 
+    double& x() { return _x; }
+    double& y() { return _y; }
+    double& z() { return _z; }
+
     double length_squared() const { return _x*_x + _y*_y + _z*_z; }
     
     double length() const { return std::sqrt(length_squared()); }

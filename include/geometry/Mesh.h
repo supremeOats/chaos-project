@@ -1,12 +1,14 @@
 #pragma once
 
-#include "utils/MeshUtils.h"
-#include "geometry/Ray.h"
+#include "geometry/Hittable.h"
+#include "utils/BVH.h"
 
-class Mesh
+class BVH;
+
+class Mesh : public Hittable
 {
 public:
-    bool hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) const;
+    virtual bool hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) const override;
 
     const Point3 get_vert(const int idx) const;
     const MeshTriangle& get_tri(const int idx) const;
@@ -19,6 +21,7 @@ public:
 
     void update_normals();
     void update_vert_normals();
+    void update_aabb();
 
 private:
     bool hit_triangle(const Ray& ray, const MeshTriangle& tri, const Range& rayRange, MeshHit& hitData) const;
@@ -33,6 +36,8 @@ private:
     std::vector<Vector3> vertNorms;
 
     int materialIdx;
+
+    BoundingBox aabb;
 };
 
 class MeshList

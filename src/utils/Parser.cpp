@@ -84,6 +84,7 @@ void read_mesh(const Value& meshData, Mesh& mesh)
     }
 
     mesh.update_vert_normals();
+    mesh.update_aabb();
 }
 
 void read_objects(const Value& objects, MeshList& world)
