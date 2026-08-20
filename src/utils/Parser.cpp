@@ -21,7 +21,8 @@ RTMatrix read_RTMatrix(const Value& mat)
     
     for (size_t i = 0; i < 3; ++i) {
         for (size_t j = 0; j < 3; ++j) {
-            res.at(i, j) = mat[i*3 + j].GetDouble();
+            SizeType matIdx = (SizeType)i*3 + (SizeType)j;
+            res.at(i, j) = mat[matIdx].GetDouble();
         }
     }
     
@@ -32,6 +33,7 @@ Material read_material(const Value& material)
 {
     MaterialType type;
 
+    //TODO - replace with switch-case
     if (material["type"] == "diffuse") {
         type = MaterialType::DIFFUSE;
     } else if (material["type"] == "reflective") {
@@ -39,6 +41,8 @@ Material read_material(const Value& material)
     } else if (material["type"] == "refractive") {
         type = MaterialType::REFRACTIVE;
     } else  if (material["type"] == "constant") {
+        type = MaterialType::CONSTANT;
+    } else {
         type = MaterialType::CONSTANT;
     }
 
@@ -72,7 +76,7 @@ void read_mesh(const Value& meshData, Mesh& mesh)
         mesh.set_material(0);
     }
 
-    for (size_t i = 0; i < verts.Size(); i += 3) {
+    for (SizeType i = 0; i < verts.Size(); i += 3) {
         mesh.add_vert(Point3(
             verts[i].GetDouble(),
             verts[i+1].GetDouble(),
@@ -80,7 +84,7 @@ void read_mesh(const Value& meshData, Mesh& mesh)
         ));
     }
 
-    for (size_t t = 0; t < triangles.Size(); t += 3) {
+    for (SizeType t = 0; t < triangles.Size(); t += 3) {
         unsigned idxV0 = triangles[t].GetUint();
         unsigned IdxV1 = triangles[t + 1].GetUint();
         unsigned IdxV2 = triangles[t + 2].GetUint();
@@ -127,7 +131,7 @@ void read_camera(const Value& settings, const Value& camParams, Camera& cam)
 
 void read_lights(const Value& lightsParams, LightsList& lights)
 {
-    for (size_t i = 0; i < lightsParams.Size(); ++i) {
+    for (SizeType i = 0; i < lightsParams.Size(); ++i) {
         lights.push_back(PointLight(
             read_vec3(lightsParams[i]["position"]),
             (lightsParams[i].HasMember("color")) ? read_color(lightsParams[i]["color"]) : WHITE,

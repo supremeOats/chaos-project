@@ -23,6 +23,7 @@ add_executable(raytracer
     src/utils/Parser.cpp
     src/utils/ImageBuffer.cpp
     src/utils/BVH.cpp
+    src/utils/MeshUtils.cpp
 
     include/utils/Matrix.h
 )
@@ -43,6 +44,7 @@ add_executable(raytrace_animation
     src/utils/Parser.cpp
     src/utils/ImageBuffer.cpp
     src/utils/BVH.cpp
+    src/utils/MeshUtils.cpp
 
     include/utils/Matrix.h
 )
