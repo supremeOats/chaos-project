@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 project(ray_tracer VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 14)
 
 set(SOURCES main.cpp)
@@ -55,3 +56,9 @@ target_include_directories(raytrace_animation PRIVATE
 )
 
 target_compile_definitions(raytracer PRIVATE $<$<CONFIG:Debug>:DEBUG>)
+
+if(MSVC)
+    target_compile_options(raytracer PRIVATE /W4 /WX)
+else()
+    target_compile_options(raytracer PRIVATE -Wall -Wextra -Winit-self -Werror)
+endif()

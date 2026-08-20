@@ -33,7 +33,7 @@ private:
     Vector3 ray_color(const Ray& ray, const int rayDepth) const;
 
     //Shading
-    Vector3 shade_diffuse(const Ray& ray, const MeshHit& rec) const;
+    Vector3 shade_diffuse(const MeshHit& rec) const;
     Vector3 shade_reflective(const Ray& ray, const MeshHit& rec, const int rayDepth) const;
     Vector3 shade_refractive(const Ray& ray, const MeshHit& rec, const int rayDepth) const;
     Vector3 shade_constant(const Material& material) const;
@@ -45,7 +45,7 @@ private:
     const Scene scene;  //todo
     unsigned _height, _width;
     int RAY_MAX_DEPTH;
-    std::unique_ptr<ImageBuffer> image;
+    std::unique_ptr<ImageBuffer> buffer;
 
     static const double RAY_MAX_DIST;
 };

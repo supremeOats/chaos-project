@@ -19,8 +19,8 @@ public:
 	Matrix& operator=(const Matrix& m);
 	Matrix& operator=(Matrix&& m);
 	
-	virtual T& at(const uint32_t row, const uint32_t col);
-	virtual const T& at(const uint32_t row, const uint32_t col) const;
+	virtual T& at(const size_t row, const size_t col);
+	virtual const T& at(const size_t row, const size_t col) const;
 
 	uint32_t get_N() const { return N; }
 	uint32_t get_M()  const { return M; }
@@ -65,7 +65,7 @@ Matrix<T, N, M>& Matrix<T, N, M>::operator=(Matrix<T, N, M>&& m)
 }
 
 template<typename T, const unsigned N, const unsigned M>
-T& Matrix<T, N, M>::at(const uint32_t row, const uint32_t col)
+T& Matrix<T, N, M>::at(const size_t row, const size_t col)
 {
 	if (row >= N || col >= M)
 		throw std::out_of_range("Out of bounds");
@@ -74,7 +74,7 @@ T& Matrix<T, N, M>::at(const uint32_t row, const uint32_t col)
 }
 
 template<typename T, const unsigned N, const unsigned M>
-const T& Matrix<T, N, M>::at(const uint32_t row, const uint32_t col) const
+const T& Matrix<T, N, M>::at(const size_t row, const size_t col) const
 {
 	if (row >= N || col >= M)
 		throw std::out_of_range("Out of bounds");

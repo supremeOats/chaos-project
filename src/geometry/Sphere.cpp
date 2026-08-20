@@ -19,6 +19,10 @@ bool ProceduralSphere::hit(const Ray& ray, const Range& rayRange, MeshHit& hitDa
         (-1*b + discSqrt) / (2 * a)
     );
     
+    if (root < rayRange.minVal || root > rayRange.maxVal) {
+        return false;
+    }
+
     //
     hitData.t = root;
     hitData.point = ray.origin() + ray.direction() * hitData.t;

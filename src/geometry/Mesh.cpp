@@ -53,15 +53,13 @@ void Mesh::update_normals()
 
 void Mesh::update_vert_normals()
 {
-    for (size_t i = 0; i < vertices.size(); ++i) {
-        vertNorms[i] = Vector3(0.0);
-        
-        for (const MeshTriangle& tri : triangles) {
-            if (tri.is_vertex(i)) {
-                vertNorms[i] += tri.normal;
-            }
-        }
+    for (const MeshTriangle& tri : triangles) {
+        vertNorms[tri.v[0]] += tri.normal;
+        vertNorms[tri.v[1]] += tri.normal;
+        vertNorms[tri.v[2]] += tri.normal;
+    }
 
+    for (size_t i = 0; i < vertices.size(); ++i) {
         vertNorms[i] = normalized(vertNorms[i]);
     }
 }
@@ -139,7 +137,7 @@ bool Mesh::hit_triangle(const Ray& ray, const MeshTriangle& tri, const Range& ra
     // if (0 <= rayNormDot)
     //     return false;
 
-    float dist = dot(tri.normal, vertices[tri.v[0]] - ray.origin()) / rayNormDot;
+    double dist = dot(tri.normal, vertices[tri.v[0]] - ray.origin()) / rayNormDot;
     
     if (dist >= rayRange.minVal &&
         dist <= rayRange.maxVal &&
@@ -190,12 +188,12 @@ Vector3 Mesh::interpolated_normal(const Point3& p, const MeshTriangle& tri) cons
     Point3 v1 = vertices[tri.v[1]];
     Point3 v2 = vertices[tri.v[2]];
 
-    float totalArea = triangle_area(v0, v1, v2);
-    float areaA = triangle_area(v0, v2, p);
-    float areaB = triangle_area(v0, v1, p);
+    double totalArea = triangle_area(v0, v1, v2);
+    double areaA = triangle_area(v0, v2, p);
+    double areaB = triangle_area(v0, v1, p);
     
-    float u = areaA / totalArea;
-    float v = areaB / totalArea;
+    double u = areaA / totalArea;
+    double v = areaB / totalArea;
  
     Vector3 interpolatedVec =
             vertNorms[tri.v[1]] * u +
@@ -204,13 +202,3 @@ Vector3 Mesh::interpolated_normal(const Point3& p, const MeshTriangle& tri) cons
 
     return normalized(interpolatedVec);
 }
-
-float triangle_area(const Point3 p0, const Point3 p1, const Point3 p2)
-{
-    Vector3 v1 = p1 - p0;
-    Vector3 v2 = p2 - p0;
-    Vector3 v3 = cross(v1, v2);
-
-    return v3.length() / 2;
-}
-

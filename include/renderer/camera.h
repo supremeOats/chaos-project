@@ -16,7 +16,7 @@ public:
     );
 
     // Ray create_ray(const float x, const float y) const;
-    Ray create_ray(const float x, const float y, const float w, const float h) const;
+    Ray create_ray(const double x, const double y) const;
 
     void set_fov(const double fov);
     

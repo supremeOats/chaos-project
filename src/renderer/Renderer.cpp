@@ -22,16 +22,16 @@ void Renderer::render_single_thread(std::ofstream& imageFile) const
 
     for (size_t row = 0; row < _height; ++row) {
         for (size_t col = 0; col < _width; ++col) {
-            float x = col + 0.5;
+            double x = col + 0.5;
             x /= _width;
             x -= 0.5;
             x *= ratio();
 
-            float y = row + 0.5;
+            double y = row + 0.5;
             y /= _height;
             y -= 0.5;
 
-            Ray ray = scene.camera->create_ray(x, y, _width, _height);
+            Ray ray = scene.camera->create_ray(x, y);
 
             imageFile << norm_vec_to_color(ray_color(ray, 0));
         }
@@ -93,8 +93,7 @@ void Renderer::render(const char* imageFileName) const
         th.join();
     }
 
-    
-    image->write_to_file(imageFile);
+    buffer->write_to_file(imageFile);
 
     imageFile.close();
 }
@@ -107,17 +106,17 @@ void Renderer::render_region(const PixelPos& start, const PixelPos& end) const
 
     for (size_t row = start.x; row < end.x; ++row) {
         for (size_t col = start.y; col < end.y; ++col) {
-            float x = col + 0.5;
+            double x = col + 0.5;
             x /= _width;
             x -= 0.5;
             x *= ratio();
 
-            float y = row + 0.5;
+            double y = row + 0.5;
             y /= _height;
             y -= 0.5;
 
-            Ray ray = scene.camera->create_ray(x, y, _width, _height);
-            image->at(col, row) = norm_vec_to_color(ray_color(ray, 0));
+            Ray ray = scene.camera->create_ray(x, y);
+            buffer->at(col, row) = norm_vec_to_color(ray_color(ray, 0));
         }
     }
 }
@@ -141,7 +140,7 @@ Vector3 Renderer::ray_color(const Ray& ray, const int rayDepth) const
         switch (hitMaterial.type())
         {
         case DIFFUSE:
-            finalColorVec = shade_diffuse(ray, rec);
+            finalColorVec = shade_diffuse(rec);
             break;
 
         case REFLECTIVE:
@@ -155,19 +154,6 @@ Vector3 Renderer::ray_color(const Ray& ray, const int rayDepth) const
         default: 
             break;
         }
-
-        // if (hitMaterial.type() == REFLECTIVE) {
-        //     finalColorVec = shade_reflective(ray, rec, rayDepth);
-        // }
-        // else if (hitMaterial.type() == REFRACTIVE) {
-        //     finalColorVec = shade_refractive(ray, rec, rayDepth);
-        // }
-        // else if (hitMaterial.type() == CONSTANT) {
-        //     finalColorVec = shade_constant(hitMaterial);
-        // }
-        // else {
-        //     finalColorVec = shade_diffuse(ray, rec);
-        // }
         
         return clamp(finalColorVec, {-1.0, 1.0});
     }
@@ -175,7 +161,7 @@ Vector3 Renderer::ray_color(const Ray& ray, const int rayDepth) const
     return gradient_bg(ray);
 }
 
-Vector3 Renderer::shade_diffuse(const Ray& ray, const MeshHit& rec) const
+Vector3 Renderer::shade_diffuse(const MeshHit& rec) const
 {
     Vector3 finalColorVec(0, 0, 0);
 
@@ -317,6 +303,5 @@ Vector3 Renderer::gradient_bg(const Ray& ray) const
 
 void Renderer::init_buffer()
 {
-    image = std::make_unique<ImageBuffer> (_height, _width);
+    buffer = std::make_unique<ImageBuffer> (_height, _width);
 }
-

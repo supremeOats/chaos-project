@@ -6,6 +6,7 @@
 class ImageBuffer : public Grid2D<Color>
 {
 public:
+    ImageBuffer();
     ImageBuffer(const int height, const int width);
         
     float ratio() const;

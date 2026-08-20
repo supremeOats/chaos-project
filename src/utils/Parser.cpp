@@ -43,12 +43,13 @@ Material read_material(const Value& material)
     }
 
     Vector3 albedo = material.HasMember("albedo") ? read_vec3(material["albedo"]) : Vector3(1.0);
+    bool smooth = material.HasMember("smooth_shading") ? material["smooth_shading"].GetBool() : false;
     double ior = material.HasMember("ior") ? material["ior"].GetDouble() : 1.0;
 
     return Material(
         type,
         albedo,
-        material["smooth_shading"].GetBool(),
+        smooth,
         ior
     );
 }

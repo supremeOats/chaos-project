@@ -1,6 +1,5 @@
 #include "renderer/Camera.h"
 
-const int Camera::RAY_MAX_DEPTH = 3;
 Color Camera::BG_COLOR = WHITE;
 
 # define PI 3.14159265358979323846
@@ -12,10 +11,10 @@ Camera::Camera(const Point3& pos, const Vector3& dir)
     update_viewport();
 }
 
-Ray Camera::create_ray(const float x, const float y, const float w, const float h) const
+Ray Camera::create_ray(const double x, const double y) const
 {
-    float px = x * viewportScale;
-    float py = -y * viewportScale;
+    double px = x * viewportScale;
+    double py = -y * viewportScale;
 
     return Ray(
         _pos,

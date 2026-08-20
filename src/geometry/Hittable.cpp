@@ -1,9 +1,9 @@
 #include "geometry/Hittable.h"
 
-bool Hittable::hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) const
-{
-    return false;
-}
+// bool Hittable::hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) const
+// {
+//     return false;
+// }
 
 void Hittable::set_material(const int idx)
 {
