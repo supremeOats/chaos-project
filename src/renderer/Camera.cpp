@@ -14,9 +14,7 @@ Camera::Camera(const Point3& pos, const Vector3& dir)
 
 Ray Camera::create_ray(const float x, const float y, const float w, const float h) const
 {
-    float aspect = w / h;
-
-    float px = x * viewportScale * aspect;
+    float px = x * viewportScale;
     float py = -y * viewportScale;
 
     return Ray(

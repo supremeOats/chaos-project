@@ -134,3 +134,26 @@ void read_lights(const Value& lightsParams, LightsList& lights)
         ));
     }    
 }
+
+void load_scene(const Document& scene, Camera& camera, MeshList& world, LightsList& lights, MaterialList& materials, Renderer& renderer)
+{
+    read_settings(scene["settings"], renderer);
+    
+    read_camera(scene["settings"], scene["camera"], camera);
+    
+    read_objects(scene["objects"], world);
+    
+    if(scene.HasMember("materials")) {
+        read_material_list(scene["materials"], materials);
+    } else {
+        materials.push_back(Material(DIFFUSE, (1.0), false, 1.0));
+    }
+    
+    if(scene.HasMember("lights")) {
+        read_lights(scene["lights"], lights);
+    }
+
+    #ifdef DEBUG
+    std::cout << "\nScene loaded\n";
+    #endif
+}

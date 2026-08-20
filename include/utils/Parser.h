@@ -27,3 +27,5 @@ void read_settings(const Value& settings, Renderer& renderer);
 void read_camera(const Value& settings, const Value& camParams, Camera& cam);
 
 void read_lights(const Value& lightsParams, LightsList& lights);
+
+void load_scene(const Document& scene, Camera& camera, MeshList& world, LightsList& lights, MaterialList& materials, Renderer& renderer);

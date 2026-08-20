@@ -6,6 +6,32 @@
 #include "utils/Parser.h"
 #include "geometry/Sphere.h"
 
+void animation(const Renderer& renderer, Scene& scene)
+{
+    const double PI = 3.14159265358979323846;
+
+    const int frameCount = 144;
+    for (size_t frame = 0; frame < frameCount; ++frame) {
+
+        if (frame < frameCount/3) {
+            scene.camera->set_fov(60 + frame*1.1);
+        }
+        else {
+            scene.camera->turn_table((0.0, 0.0, 0.0), 2*PI/(frameCount*2/3));
+        }
+        
+        for (PointLight& light : *scene.lights) {
+            light.turn_table((0.0, 0.0, 0.0), 4*PI/frameCount);
+        }
+
+        std::string frameName = "./demo/animation2/frame_" + std::to_string(frame) + ".ppm";
+
+        renderer.render(frameName.c_str());
+
+        std::cout << "frame " << frame << " rendered\n";
+    }
+}
+
 int main(int argc, char *argv[])
 {
     if (argc != 3) {
@@ -14,9 +40,7 @@ int main(int argc, char *argv[])
     }
 
     std::string sceneFileName = argv[1];
-    std::string outputImageName = argv[2];
-
-    //Parse scene
+    
     std::ifstream sceneFile("scenes/" + sceneFileName);
     
     if (!sceneFile.is_open()) {
@@ -50,27 +74,26 @@ int main(int argc, char *argv[])
 
     load_scene(sceneData, camera, world, lights, materials, renderer);
 
-    #ifdef DEBUG
-    std::cout << "# of objects: " << scene["objects"].Size() << '\n';
-    std::cout << "# of lights: " << lights.size() << '\n';
-    std::cout << "# of materials: " << materials.size() << '\n';
-    std::cout << "W: " << renderer.width() << "\tH: " << renderer.height() << '\n';
-    #endif
+    scene.camera->set_fov(100);
+
+    ProceduralSphere sphere(
+        Vector3(0.0, 7.0, 0.0),
+        3.0
+    );
+    sphere.set_material(0);
+
+    world.add(std::make_shared<ProceduralSphere>(sphere));
 
     using namespace std::chrono;
     high_resolution_clock::time_point start = high_resolution_clock::now();
 
-    renderer.render(("rendered/" + outputImageName).c_str());
+    animation(renderer, scene);
 
     high_resolution_clock::time_point end = high_resolution_clock::now();
     
     microseconds duration = duration_cast<microseconds>(end - start);    
     double seconds = duration.count() / 1'000'000.0;
-    std::cout << "Rendering time: " << seconds << "s\n";
-
-    #ifdef DEBUG
-    std::cout << "\nImage rendered\n";
-    #endif
+    std::cout << "Time: " << seconds << "s\n";
 
     return 0;
 }

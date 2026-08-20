@@ -26,7 +26,31 @@ add_executable(raytracer
     include/utils/Matrix.h
 )
 
+add_executable(raytrace_animation
+    src/demo_animation.cpp
+
+    src/geometry/Vector3.cpp
+    src/geometry/Hittable.cpp
+    src/geometry/Mesh.cpp
+    src/geometry/Sphere.cpp
+    src/geometry/Moveable.cpp
+    
+    src/renderer/Camera.cpp
+    src/renderer/Renderer.cpp
+    
+    src/utils/Color.cpp
+    src/utils/Parser.cpp
+    src/utils/ImageBuffer.cpp
+    src/utils/BVH.cpp
+
+    include/utils/Matrix.h
+)
+
 target_include_directories(raytracer PRIVATE
+    ${CMAKE_SOURCE_DIR}/include
+)
+
+target_include_directories(raytrace_animation PRIVATE
     ${CMAKE_SOURCE_DIR}/include
 )
 
