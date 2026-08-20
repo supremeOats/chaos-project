@@ -65,7 +65,11 @@ void read_mesh(const Value& meshData, Mesh& mesh)
     const Value& verts = meshData["vertices"];
     const Value& triangles = meshData["triangles"];
 
-    mesh.set_material(meshData["material_index"].GetInt());
+    if(meshData.HasMember("material_index")) {
+        mesh.set_material(meshData["material_index"].GetInt());
+    } else {
+        mesh.set_material(0);
+    }
 
     for (size_t i = 0; i < verts.Size(); i += 3) {
         mesh.add_vert(Point3(
@@ -97,7 +101,7 @@ void read_objects(const Value& objects, MeshList& world)
             mesh
         );
 
-        world.add(mesh);
+        world.add(std::make_shared<Mesh>(mesh));
     }
 }
 

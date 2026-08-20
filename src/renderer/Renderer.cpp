@@ -31,7 +31,7 @@ void Renderer::render_single_thread(std::ofstream& imageFile) const
             y /= _height;
             y -= 0.5;
 
-            Ray ray = scene.camera->create_ray(x, y);
+            Ray ray = scene.camera->create_ray(x, y, _width, _height);
 
             imageFile << norm_vec_to_color(ray_color(ray, 0));
         }
@@ -46,6 +46,11 @@ void Renderer::render_single_thread(std::ofstream& imageFile) const
 void Renderer::render(const char* imageFileName) const
 {
     std::ofstream imageFile(imageFileName, std::ios::binary | std::ios::trunc);
+    
+    if (!imageFile.is_open()) {
+        std::cerr << "Output image file cannot be opened";
+    }
+    
     imageFile << "P6 ";
     imageFile << _width << ' ' << _height << ' ';
     imageFile << MAX_COLOR_COMPONENT << '\n';
@@ -65,7 +70,9 @@ void Renderer::render(const char* imageFileName) const
         }
     }
 
+    #ifdef DEBUG
     std::cout << "buckets assigned: " << buckets.size() << '\n';
+    #endif
 
     std::atomic<std::size_t> nextBucket{0};
     unsigned numThreads = std::thread::hardware_concurrency();
@@ -109,7 +116,7 @@ void Renderer::render_region(const PixelPos& start, const PixelPos& end) const
             y /= _height;
             y -= 0.5;
 
-            Ray ray = scene.camera->create_ray(x, y);
+            Ray ray = scene.camera->create_ray(x, y, _width, _height);
             image->at(col, row) = norm_vec_to_color(ray_color(ray, 0));
         }
     }

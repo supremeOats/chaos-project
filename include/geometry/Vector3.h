@@ -54,6 +54,7 @@ Vector3 component_wise(const Vector3& lhs, const Vector3& rhs);
 
 Vector3 normalized(const Vector3& vec);
 
+double clamp(const double val, const double min, const double max);
 Vector3 clamp(const Vector3& vec, const Range& range);
 
 using Point3 = Vector3;

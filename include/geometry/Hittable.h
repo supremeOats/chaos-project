@@ -6,6 +6,12 @@ class Hittable
 {
 public:
     virtual ~Hittable() = default;
-    
-    virtual bool hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) const = 0;
+
+    virtual bool hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) const;
+
+    void set_material(const int idx);
+    int get_material_idx() const;
+
+protected:
+    int materialIdx;
 };

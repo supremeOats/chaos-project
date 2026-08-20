@@ -44,11 +44,6 @@ void Mesh::add_tri(const MeshTriangle& tri)
     update_triangle_normal(triangles[triangles.size()-1]);
 }
 
-void Mesh::set_material(const int idx)
-{
-    materialIdx = idx;
-}
-
 void Mesh::update_normals()
 {
     for (MeshTriangle& tri : triangles) {
@@ -83,9 +78,9 @@ bool MeshList::hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) cons
 
     bool successfulHit = false;
 
-    for (const auto& obj : objects) {
+    for (size_t i = 0; i < objects.size(); ++i) {
         
-        if (obj.hit(ray, rayRange, currHit)) {
+        if (objects[i]->hit(ray, rayRange, currHit)) {
             if (currHit.t > rayRange.minVal && currHit.t < closest) {                
                 closest = currHit.t;
                 
@@ -99,7 +94,7 @@ bool MeshList::hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) cons
     return successfulHit;
 }
 
-void MeshList::add(const Mesh& obj)
+void MeshList::add(const std::shared_ptr<Hittable> obj)
 {
     objects.push_back(obj);
 }
@@ -117,11 +112,6 @@ const MeshTriangle& Mesh::get_tri(const int idx) const
 const Vector3& Mesh::get_vert_norm(const int idx) const
 {
     return vertNorms[idx];
-}
-
-int Mesh::get_material_idx() const
-{
-    return materialIdx;
 }
 
 //MeshTriangle

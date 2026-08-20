@@ -126,6 +126,14 @@ Vector3 normalized(const Vector3& vec)
     return vec / vec.length();
 }
 
+double clamp(const double val, const double min, const double max)
+{
+    if (val <= min) return min;
+    if (val >= max) return max;
+
+    return val;
+}
+
 Vector3 clamp(const Vector3& vec, const Range& range)
 {
     Vector3 res(

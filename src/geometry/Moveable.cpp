@@ -56,22 +56,26 @@ void Moveable::roll(const float rad)
 
 void Moveable::turn_table(const Point3 center, const float rad)
 {
-    Vector3 offset = _pos - center;          // vector from pivot to camera
-    double radius = offset.length();
+    float cosA = std::cos(rad);
+    float sinA = std::sin(rad);
 
-    double angle = std::atan2(offset.z(), offset.x());
-    angle += rad;
+    // Rotation matrix around the Y (vertical) axis
+    double rArr[9] = {
+        cosA, 0.0, sinA,
+        0.0,  1.0, 0.0,
+       -sinA, 0.0, cosA};
+    
+    RTMatrix rotY(rArr);
 
-    _pos = center + Vector3(
-        radius * std::cos(angle),
-        offset.y(),
-        radius * std::sin(angle)
-    );
+    // 1. Rotate position around the pivot point
+    Vector3 offset = _pos - center;
+    Vector3 rotatedOffset = rotY * offset;
+    _pos = center + rotatedOffset;
 
-    this->pan(-1*angle);
-
-    // this->dolly(std::sin(rad));
-    // this->truck(std::cos(rad));
+    // 2. Rotate the object's own orientation by the same amount,
+    //    so it spins in place as it orbits (rigid-body motion)
+    _dir = normalized(rotY * _dir);
+    localCoord = rotY * localCoord;
 }
 
 Vector3 operator*(const RTMatrix& mat, const Vector3& vec)

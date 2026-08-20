@@ -2,6 +2,7 @@
 
 #include "geometry/Hittable.h"
 #include "utils/BVH.h"
+#include <memory>
 
 class BVH;
 
@@ -13,11 +14,9 @@ public:
     const Point3 get_vert(const int idx) const;
     const MeshTriangle& get_tri(const int idx) const;
     const Vector3& get_vert_norm(const int idx) const;
-    int get_material_idx() const;
 
     void add_vert(const Point3& v);
     void add_tri(const MeshTriangle& tri);
-    void set_material(const int idx);
 
     void update_normals();
     void update_vert_normals();
@@ -35,8 +34,6 @@ private:
     std::vector<MeshTriangle> triangles;
     std::vector<Vector3> vertNorms;
 
-    int materialIdx;
-
     BoundingBox aabb;
 };
 
@@ -45,8 +42,8 @@ class MeshList
 public:
     bool hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) const;
 
-    void add(const Mesh& obj);
+    void add(const std::shared_ptr<Hittable> obj);
 
 private:
-    std::vector<Mesh> objects;
+    std::vector<std::shared_ptr<Hittable>> objects;
 };

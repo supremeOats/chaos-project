@@ -38,9 +38,11 @@ public:
 
     const RTMatrix& rotation_matrix() const { return localCoord; }
 
+protected:
+    Point3 _pos;
+    
 private:
     RTMatrix localCoord = IDENTITY_MATRIX;
-    Point3 _pos;
     Vector3 _dir;
 
     static double IDENTITY_VALS[9];
