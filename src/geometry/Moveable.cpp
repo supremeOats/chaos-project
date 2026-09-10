@@ -59,21 +59,17 @@ void Moveable::turn_table(const Point3 center, const float rad)
     float cosA = std::cos(rad);
     float sinA = std::sin(rad);
 
-    // Rotation matrix around the Y (vertical) axis
     double rArr[9] = {
         cosA, 0.0, sinA,
-        0.0,  1.0, 0.0,
+        0.0, 1.0, 0.0,
        -sinA, 0.0, cosA};
     
     RTMatrix rotY(rArr);
 
-    // 1. Rotate position around the pivot point
     Vector3 offset = _pos - center;
     Vector3 rotatedOffset = rotY * offset;
     _pos = center + rotatedOffset;
 
-    // 2. Rotate the object's own orientation by the same amount,
-    //    so it spins in place as it orbits (rigid-body motion)
     _dir = normalized(rotY * _dir);
     localCoord = rotY * localCoord;
 }

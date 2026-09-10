@@ -58,47 +58,25 @@ void BoundingBox::update(const std::vector<Point3> verts)
     }
 }
 
-/*
-void BVH::build(const std::vector<Point3>& verts, const std::vector<MeshTriangle>& tris)
+void BoundingBox::split(BoundingBox& left, BoundingBox& right) const
 {
-    // nodes[0] = BVHNode{BoundingBox(verts)};
-    
-    
-}
+    double xLength = maxBound.x() - minBound.x();
+    double yLength = maxBound.y() - minBound.y();
+    double zLength = maxBound.z() - minBound.z();
 
-bool BVH::hit(const Mesh& mesh, const Ray& ray, const Range& rayRange, MeshHit& hitData) const
-{
-    int stack[64];
-    int sp = 0;
-    stack[sp++] = 0; // root
-    bool hitAnything = false;
-    Range range = rayRange;
-    
-    while (sp > 0)
-    {
-        const BVHNode& node = nodes[stack[--sp]];
-        if (!node.box.intersect(ray)) continue;
-        
-        if (node.triCount > 0)
-        {
-            for (int i = 0; i < node.triCount; ++i)
-            {
-                unsigned triIdx = triIndices[node.triStart + i];
-                if (mesh.hit_triangle(ray, mesh.get_tri(triIdx), range, hitData))
-                {
-                    hitAnything = true;
-                    range.maxVal = hitData.t;
-                }
-            }
-        }
-        else
-        {
-            stack[sp++] = node.left;
-            stack[sp++] = node.right;
-        }
+    left = *this;
+    right = *this;
+
+    if (xLength >= yLength && xLength >= zLength) {
+        left.maxBound.x() = minBound.x() + xLength / 2;
+        right.minBound.x() = minBound.x() + xLength / 2;
     }
-    
-    return hitAnything;
+    else if (yLength >= xLength && yLength >= zLength) {
+        left.maxBound.y() = minBound.y() + yLength / 2;
+        right.minBound.y() = minBound.y() + yLength / 2;
+    }
+    else {
+        left.maxBound.z() = minBound.z() + zLength / 2;
+        right.minBound.z() = minBound.z() + zLength / 2;
+    }
 }
-*/
-

@@ -23,7 +23,6 @@ bool ProceduralSphere::hit(const Ray& ray, const Range& rayRange, MeshHit& hitDa
         return false;
     }
 
-    //
     hitData.t = root;
     hitData.point = ray.origin() + ray.direction() * hitData.t;
     hitData.normal = (hitData.point - center) / radius;

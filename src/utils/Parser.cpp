@@ -123,6 +123,9 @@ void read_camera(const Value& settings, const Value& camParams, Camera& cam)
     if (settings.HasMember("background_color"))
         cam.BG_COLOR = read_color(settings["background_color"]);
     
+    if (camParams.HasMember("fov"))
+        cam.set_fov(camParams["fov"].GetDouble());
+
     Point3 pos = read_vec3(camParams["position"]);
     cam.move_to(pos);
 
@@ -157,8 +160,11 @@ void load_scene(const Document& scene, Camera& camera, MeshList& world, LightsLi
     if(scene.HasMember("lights")) {
         read_lights(scene["lights"], lights);
     }
-
+    
     #ifdef DEBUG
-    std::cout << "\nScene loaded\n";
+    std::cout << "# of objects: " << scene["objects"].Size() << '\n';
+    std::cout << "# of lights: " << lights.size() << '\n';
+    std::cout << "# of materials: " << materials.size() << '\n';
+    std::cout << "W: " << renderer.width() << "\tH: " << renderer.height() << '\n';
     #endif
 }

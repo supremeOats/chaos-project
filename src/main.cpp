@@ -2,9 +2,29 @@
 #include <ctime>
 #include <chrono>
 
-#include "renderer/Camera.h"
 #include "utils/Parser.h"
-#include "geometry/Sphere.h"
+
+void print_debug_msg(const char* msgStr)
+{
+    msgStr;
+    #ifdef DEBUG
+    std::cout << msgStr << '\n';
+    #endif    
+}
+
+void render_and_mesure_time(const Renderer& renderer, const std::string& outputImageName)
+{
+    using namespace std::chrono;
+    high_resolution_clock::time_point start = high_resolution_clock::now();
+
+    renderer.render(("rendered/" + outputImageName).c_str());
+
+    high_resolution_clock::time_point end = high_resolution_clock::now();
+    
+    microseconds duration = duration_cast<microseconds>(end - start);    
+    double seconds = duration.count() / 1'000'000.0;
+    std::cout << "Time elapsed: " << seconds << "s\n";
+}
 
 int main(int argc, char *argv[])
 {
@@ -33,7 +53,7 @@ int main(int argc, char *argv[])
     Document sceneData;
     sceneData.Parse(content.c_str());
 
-    //Scene setup
+    //Set scene up
     Camera camera;
     MeshList world;
     LightsList lights;
@@ -48,28 +68,14 @@ int main(int argc, char *argv[])
 
     Renderer renderer(scene);
 
+    //Load scene
     load_scene(sceneData, camera, world, lights, materials, renderer);
 
+    //Render
     #ifdef DEBUG
-    std::cout << "# of objects: " << scene["objects"].Size() << '\n';
-    std::cout << "# of lights: " << lights.size() << '\n';
-    std::cout << "# of materials: " << materials.size() << '\n';
-    std::cout << "W: " << renderer.width() << "\tH: " << renderer.height() << '\n';
-    #endif
-
-    using namespace std::chrono;
-    high_resolution_clock::time_point start = high_resolution_clock::now();
-
+    render_and_mesure_time(renderer, outputImageName);
+    #else
     renderer.render(("rendered/" + outputImageName).c_str());
-
-    high_resolution_clock::time_point end = high_resolution_clock::now();
-    
-    microseconds duration = duration_cast<microseconds>(end - start);    
-    double seconds = duration.count() / 1'000'000.0;
-    std::cout << "Rendering time: " << seconds << "s\n";
-
-    #ifdef DEBUG
-    std::cout << "\nImage rendered\n";
     #endif
 
     return 0;
