@@ -17,7 +17,7 @@ void render_and_mesure_time(const Renderer& renderer, const std::string& outputI
     using namespace std::chrono;
     high_resolution_clock::time_point start = high_resolution_clock::now();
 
-    renderer.render(("rendered/" + outputImageName).c_str());
+    renderer.render(("rendered/" + outputImageName + ".ppm").c_str());
 
     high_resolution_clock::time_point end = high_resolution_clock::now();
     
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     #ifdef DEBUG
     render_and_mesure_time(renderer, outputImageName);
     #else
-    renderer.render(("rendered/" + outputImageName).c_str());
+    renderer.render(("rendered/" + outputImageName + ".ppm").c_str());
     #endif
 
     return 0;
