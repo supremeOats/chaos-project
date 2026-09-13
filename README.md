@@ -1,16 +1,8 @@
-<style>
-    .red {
-        color:red;
-        font-weight:bold;
-        font-family:sans-serif;
-    }
-</style>
-
-# <p class="red"> Chaos Project <p>
+# 🟥 Chaos Project
 ![Dragon Demo Image](.\demo\readme_banner.jpeg)
 
 ## Overview
-<span class="red">Chaos Project </span> is a ray tracing engine build as part of [Chaos Camp 2026](https://www.chaos.com/chaos-camp), specifiaclly its Ray Tracing course. The ray tracer is implemented in C++ 14 and uses multithreading, currently it's CPU-based.
+Chaos Project is a ray tracing engine build as part of [Chaos Camp 2026](https://www.chaos.com/chaos-camp), specifiaclly its Ray Tracing course. The ray tracer is implemented in C++ 14 and uses multithreading, currently it's CPU-based.
 
 For now, the project works only with *.crtscene* files as input and only renders images in *.ppm* file format.
 

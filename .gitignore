@@ -1,6 +1,7 @@
 build/
 .vscode/
-demo/
+demo/animation
+demo/animation2
 scenes/
 rendered/
 results/
