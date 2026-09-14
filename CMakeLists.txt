@@ -51,6 +51,7 @@ add_executable(raytrace_animation
 
 target_include_directories(raytracer PRIVATE
     ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/external
 )
 
 target_include_directories(raytrace_animation PRIVATE
