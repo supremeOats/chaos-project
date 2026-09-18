@@ -8,3 +8,12 @@ double triangle_area(const Point3 p0, const Point3 p1, const Point3 p2)
 
     return v3.length() / 2;
 }
+
+Point3 centroid(const Point3 p0, const Point3 p1, const Point3 p2)
+{
+    return Point3(
+        (p0.x() + p1.x() + p2.x()) / 3,
+        (p0.y() + p1.y() + p2.y()) / 3,
+        (p0.z() + p1.z() + p2.z()) / 3
+    );
+}
