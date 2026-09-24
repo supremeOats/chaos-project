@@ -62,11 +62,18 @@ void BoundingBox::expand(const Point3 vert)
 {
     minBound.x() = std::min(minBound.x(), vert.x());
     minBound.y() = std::min(minBound.y(), vert.y());
-    minBound.z() = std::min(minBound.x(), vert.z());
+    minBound.z() = std::min(minBound.z(), vert.z());
 
     maxBound.x() = std::max(maxBound.x(), vert.x());
     maxBound.y() = std::max(maxBound.y(), vert.y());
-    maxBound.z() = std::max(maxBound.x(), vert.z());
+    maxBound.z() = std::max(maxBound.z(), vert.z());
+}
+
+void BoundingBox::expand_by_triangle(const std::vector<Point3> verts, const MeshTriangle tri)
+{
+    expand(verts[tri.v[0]]);
+    expand(verts[tri.v[1]]);
+    expand(verts[tri.v[2]]);
 }
 
 void BoundingBox::split_half(BoundingBox& left, BoundingBox& right) const
@@ -94,15 +101,17 @@ void BoundingBox::split_half(BoundingBox& left, BoundingBox& right) const
 
 int BoundingBox::longest_axis() const
 {
-    int xLen = maxBound.x() - minBound.x();
-    int yLen = maxBound.y() - minBound.y();
-    int zLen = maxBound.z() - minBound.z();
+    double xLen = maxBound.x() - minBound.x();
+    double yLen = maxBound.y() - minBound.y();
+    double zLen = maxBound.z() - minBound.z();
 
     if (xLen >= yLen && xLen >= zLen) return 0;
     
     if (yLen >= xLen && yLen >= zLen) return 1;
     
-    /* if (zLen >= xLen && zLen >= yLen) */ return 2;
+    if (zLen >= xLen && zLen >= yLen) return 2;
+
+    return -1;
 }
 
 Point3 BoundingBox::centroid() const
@@ -117,21 +126,19 @@ Point3 BoundingBox::centroid() const
 //
 bool Node::is_leaf() const
 {
-    return children[0] == -1 && children[1] == -1;
+    return !triangles.empty();
+    // return children[0] == -1 && children[1] == -1;
 }
 
 //AccTree
+AccTree::AccTree() {}
+
 AccTree::AccTree(const std::vector<Point3> verts, const std::vector<MeshTriangle> tris)
     : nodes()
 {
-    //sort triangle indices by triangle centroid (insertion sort?)
-    for (size_t i = 0; i < tris.size(); ++i) {
-        // int key = 
-    }
-
     //init root node
     BoundingBox meshAABB(verts);
-    nodes.push_back(Node{meshAABB, -1, {-1, -1}});
+    nodes.push_back(Node{meshAABB, -1, {-1, -1}, {}});
 
     //recursively init children - split curr aabb and triangle list
     // ^ top-down
@@ -144,7 +151,7 @@ AccTree::AccTree(const std::vector<Point3> verts, const std::vector<MeshTriangle
 void AccTree::build(
     std::vector<Node>& nodes, int currNode,
     const std::vector<Point3> verts, const std::vector<MeshTriangle> tris,
-    const std::vector<int> indices)
+    std::vector<int> indices)
 {
     //base case
     if (indices.size() <= MAX_LEAF_TRI_COUNT) {
@@ -155,19 +162,38 @@ void AccTree::build(
     //split AABB
     //include and expand
 
-    BoundingBox leftChildAABB;
-    BoundingBox rightChildAABB;
-
-    nodes[currNode].aabb.split_half(leftChildAABB, rightChildAABB);
-    
-    std::vector<int> leftIndices(indices.size() / 2);
-    std::vector<int> rightIndices(indices.size() / 2);
-
-    Point3 aabbCentroid = nodes[currNode].aabb.centroid();
     int splitAxis = nodes[currNode].aabb.longest_axis();
+    auto mid = indices.begin() + indices.size() / 2;
 
+    std::nth_element(
+        indices.begin(), mid, indices.end(),
+        [&] (int idx1, int idx2) -> bool {
+            Point3 centroid1 = centroid(idx1, verts, tris);
+            Point3 centroid2 = centroid(idx2, verts, tris);
+            return centroid1[splitAxis] < centroid2[splitAxis];
+        }
+    );
+
+    std::vector<int> leftIndices(indices.begin(), mid);
+    std::vector<int> rightIndices(mid, indices.end());
+
+    BoundingBox leftChildAABB;
+    for (int index : leftIndices) {
+        leftChildAABB.expand_by_triangle(verts, tris[index]);
+    }
+
+    BoundingBox rightChildAABB;
+    for (int index : rightIndices) {
+        rightChildAABB.expand_by_triangle(verts, tris[index]);
+    }
+
+    /*
     for (const int& i : indices) {
-        Point3 triCentroid = centroid(tris[i].v[0], tris[i].v[1], tris[i].v[2]);
+        Point3 triCentroid = centroid(
+            verts[tris[i].v[0]],
+            verts[tris[i].v[1]],
+            verts[tris[i].v[2]]
+        );
         
         //TODO - ugly code, clean it
         switch (splitAxis)
@@ -175,92 +201,105 @@ void AccTree::build(
         case 0:
             if (triCentroid.x() < aabbCentroid.x()) {
                 leftIndices.push_back(i);
-                
-                leftChildAABB.expand(tris[i].v[0]);
-                leftChildAABB.expand(tris[i].v[1]);
-                leftChildAABB.expand(tris[i].v[2]);
+                leftChildAABB.expand_by_triangle(verts, tris[i]);
             } else {
                 rightIndices.push_back(i);
-                
-                rightChildAABB.expand(tris[i].v[0]);
-                rightChildAABB.expand(tris[i].v[1]);
-                rightChildAABB.expand(tris[i].v[2]);
+                rightChildAABB.expand_by_triangle(verts, tris[i]);
             }
             break;
         
         case 1:
             if (triCentroid.y() < aabbCentroid.y()) {
                 leftIndices.push_back(i);
-                
-                leftChildAABB.expand(tris[i].v[0]);
-                leftChildAABB.expand(tris[i].v[1]);
-                leftChildAABB.expand(tris[i].v[2]);
+                leftChildAABB.expand_by_triangle(verts, tris[i]);
             } else {
                 rightIndices.push_back(i);
-                
-                rightChildAABB.expand(tris[i].v[0]);
-                rightChildAABB.expand(tris[i].v[1]);
-                rightChildAABB.expand(tris[i].v[2]);
+                rightChildAABB.expand_by_triangle(verts, tris[i]);
             }
             break;
 
         case 2:
             if (triCentroid.z() < aabbCentroid.z()) {
                 leftIndices.push_back(i);
-                
-                leftChildAABB.expand(tris[i].v[0]);
-                leftChildAABB.expand(tris[i].v[1]);
-                leftChildAABB.expand(tris[i].v[2]);
+                leftChildAABB.expand_by_triangle(verts, tris[i]);
             } else {
                 rightIndices.push_back(i);
-
-                rightChildAABB.expand(tris[i].v[0]);
-                rightChildAABB.expand(tris[i].v[1]);
-                rightChildAABB.expand(tris[i].v[2]);
+                rightChildAABB.expand_by_triangle(verts, tris[i]);
             }
             break;
         }
 
     }
+    */
 
-    //left subtree
+    // Build and add left subtree
     nodes.push_back(Node{
         leftChildAABB,
         currNode,
         {-1, -1},
         {}
     });
-
-    build(nodes, currNode+1, verts, tris, leftIndices);
     nodes[currNode].children[0] = currNode+1;
+    
+    build(nodes, currNode+1, verts, tris, leftIndices);
 
-    //right subtree
+    // Build and add right subtree
+    int rightChildIdx = (int)nodes.size();
+
     nodes.push_back(Node{
         rightChildAABB,
         currNode,
         {-1, -1},
         {}
     });
-
-    build(nodes, nodes.size(), verts, tris, leftIndices);
-    nodes[currNode].children[0] = nodes.size();
+    nodes[currNode].children[1] = rightChildIdx;
+    
+    build(nodes, rightChildIdx, verts, tris, rightIndices);
 }
 
-std::vector<int> AccTree::intersect(const Ray& ray)
+std::vector<int> AccTree::intersect(const Ray& ray) const
 {
+    std::vector<int> nodesToCheck = {0};
+    std::vector<int> candidateTriangles{};
+
+    while (!nodesToCheck.empty()) {
+        const Node& currNode = nodes[nodesToCheck.back()];
+        nodesToCheck.pop_back();
+
+        if (!currNode.aabb.intersect(ray)) {
+            continue;
+        }
+    
+        if (currNode.is_leaf()) {
+            candidateTriangles.insert(
+                candidateTriangles.end(),
+                currNode.triangles.begin(),
+                currNode.triangles.end()
+            );
+        }
+        else {
+            if (currNode.children[0] != -1) {
+                nodesToCheck.push_back(currNode.children[0]);
+            }
+
+            if (currNode.children[1] != -1) {
+                nodesToCheck.push_back(currNode.children[1]);
+            }
+        }
+    }
+
+    return candidateTriangles;
+
+    /*
     int index = 0;
     while (nodes[index].aabb.intersect(ray)) {
         if (nodes[index].is_leaf()) {
-            std::vector<int>& nodeTris = nodes[index].triangles;
-            
-            for (size_t i = 0; i < nodeTris.size(); ++i) {
-                return nodeTris;
-            }
+            return nodes[index].triangles;
         }
-
+        
         int leftChild = nodes[index].children[0];
         int rightChild = nodes[index].children[1];
-
+        
         if (nodes[leftChild].aabb.intersect(ray)) {
             index = leftChild;
         }
@@ -268,21 +307,10 @@ std::vector<int> AccTree::intersect(const Ray& ray)
             index = rightChild;
         }
     }
-
+    
     return std::vector<int>();
+    */
 }
-
-// void MeshBVH::build(
-//     std::vector<Node>& nodes,
-//     const std::vector<Point3> verts,
-//     const std::vector<MeshTriangle> tris)
-// {
-//     int nodeIdx = 0;
-
-//     while (true) {
-//         if ()
-//     }
-// }
 
 /*
 void AccTree::build(int parent, int depth, const std::vector<int> triangles)

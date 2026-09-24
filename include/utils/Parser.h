@@ -2,7 +2,6 @@
 
 #include "geometry/Mesh.h"
 #include "renderer/Renderer.h"
-#include "Color.h"
 
 #include "rapidjson/document.h"
 

@@ -7,29 +7,53 @@
 
 bool Mesh::hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) const
 {
-    if (!aabb.intersect(ray)) {
+    std::vector<int> intersectedTriangles = accTree.intersect(ray);
+    
+    if (intersectedTriangles.empty()) {
         return false;
     }
 
     double closest = rayRange.maxVal;
-    MeshHit currHit = {hitData.t, hitData.normal, hitData.point};
-    
     bool successfulHit = false;
-    
-    for (const auto& tri : triangles) {        
-        if (hit_triangle(ray, tri, rayRange, currHit)) {
-            if (currHit.t > rayRange.minVal && currHit.t < closest) {                
-                closest = currHit.t;
+
+    for (int index : intersectedTriangles) {
+        MeshHit currHit = {hitData.t, hitData.normal, hitData.point};
+
+        if (hit_triangle(ray, triangles[index], rayRange, currHit) && currHit.t < closest) {
+            closest = currHit.t;
+
+            hitData = currHit;
+            hitData.materialIdx = materialIdx;
                 
-                hitData = currHit;
-                hitData.materialIdx = materialIdx;
-                
-                successfulHit = true;
-            }
+            successfulHit = true;
         }
     }
-    
+
     return successfulHit;
+
+    // if (!aabb.intersect(ray)) {
+    //     return false;
+    // }
+
+    // double closest = rayRange.maxVal;
+    // MeshHit currHit = {hitData.t, hitData.normal, hitData.point};
+    
+    // bool successfulHit = false;
+    
+    // for (const auto& tri : triangles) {        
+    //     if (hit_triangle(ray, tri, rayRange, currHit)) {
+    //         if (currHit.t > rayRange.minVal && currHit.t < closest) {                
+    //             closest = currHit.t;
+                
+    //             hitData = currHit;
+    //             hitData.materialIdx = materialIdx;
+                
+    //             successfulHit = true;
+    //         }
+    //     }
+    // }
+    
+    // return successfulHit;
 }
 
 void Mesh::add_vert(const Point3& v)
@@ -64,10 +88,15 @@ void Mesh::update_vert_normals()
     }
 }
 
-void Mesh::update_aabb()
+void Mesh::update_acc_tree()
 {
-    aabb.update(vertices);
+    accTree = AccTree(vertices, triangles);
 }
+
+// void Mesh::update_aabb()
+// {
+//     aabb.update(vertices);
+// }
 
 bool MeshList::hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) const
 {   

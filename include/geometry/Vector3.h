@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <stdexcept>
 
 class Vector3
 {
@@ -13,6 +14,8 @@ public:
     double x() const { return _x; }
     double y() const { return _y; }
     double z() const { return _z; }
+
+    double operator[] (int elem) const;
 
     double& x() { return _x; }
     double& y() { return _y; }

@@ -24,3 +24,4 @@ struct MeshTriangle
 
 double triangle_area(const Point3 p0, const Point3 p1, const Point3 p2);
 Point3 centroid(const Point3 p0, const Point3 p1, const Point3 p2);
+Point3 centroid(int idx, const std::vector<Point3>& verts, const std::vector<MeshTriangle>& tris);

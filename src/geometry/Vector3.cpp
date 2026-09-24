@@ -1,5 +1,27 @@
 #include "geometry/Vector3.h"
 
+double Vector3::operator[] (int elem) const
+{
+    switch (elem)
+    {
+    case 0:
+        return _x;
+        break;
+    
+    case 1:
+        return _y;
+        break;
+
+    case 2:
+        return _z;
+        break;
+
+    default:
+        throw std::invalid_argument("Vector3 object has no such element");
+        break;
+    }
+}
+
 Vector3& Vector3::operator+= (const Vector3& vec)
 {
     this->_x += vec._x;

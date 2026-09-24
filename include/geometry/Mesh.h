@@ -4,8 +4,6 @@
 #include "utils/BVH.h"
 #include <memory>
 
-class BVH;
-
 class Mesh : public Hittable
 {
 public:
@@ -20,7 +18,8 @@ public:
 
     void update_normals();
     void update_vert_normals();
-    void update_aabb();
+    void update_acc_tree();
+    // void update_aabb();
 
 private:
     bool hit_triangle(const Ray& ray, const MeshTriangle& tri, const Range& rayRange, MeshHit& hitData) const;
@@ -34,7 +33,8 @@ private:
     std::vector<MeshTriangle> triangles;
     std::vector<Vector3> vertNorms;
 
-    BoundingBox aabb;
+    // BoundingBox aabb;
+    AccTree accTree;
 };
 
 class MeshList

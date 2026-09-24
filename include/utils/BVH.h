@@ -2,6 +2,7 @@
 
 #include "geometry/Vector3.h"
 #include "utils/MeshUtils.h"
+#include <iostream>
 #include <vector>
 #include <numeric>
 
@@ -13,8 +14,8 @@ public:
 
     void update(const std::vector<Point3> verts);
     void expand(const Point3 vert);
+    void expand_by_triangle(const std::vector<Point3> verts, const MeshTriangle tri);
     
-
     bool intersect(const Ray& ray) const;
     void split_half(BoundingBox& left, BoundingBox& right) const;
 
@@ -29,7 +30,7 @@ struct Node {
     BoundingBox aabb;
 
     int parentIdx;
-    int children[2];
+    int children[2] = {-1, -1};
 
     std::vector<int> triangles;
 
@@ -42,8 +43,9 @@ struct Node {
 class AccTree
 {
 public:
+    AccTree();
     AccTree(const std::vector<Point3> verts, const std::vector<MeshTriangle> tris);
-    std::vector<int> intersect(const Ray& ray); //returns index of the intersected trianlge, if there is no intersection returns -1
+    std::vector<int> intersect(const Ray& ray) const; //returns vector of indices of the trianlges in the intersected leaf
 
 private:
     // static void build(std::vector<Node>& nodes, const std::vector<Point3> verts, const std::vector<MeshTriangle> tris);
@@ -58,7 +60,7 @@ private:
     std::vector<int> triangleIndices;
     std::vector<Node> nodes;
 
-    static const int MAX_LEAF_TRI_COUNT = 2;
+    static const int MAX_LEAF_TRI_COUNT = 4;
 };
 
 /*

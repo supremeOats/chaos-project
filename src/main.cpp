@@ -23,6 +23,7 @@ void render_and_mesure_time(const Renderer& renderer, const std::string& outputI
     
     microseconds duration = duration_cast<microseconds>(end - start);    
     double seconds = duration.count() / 1'000'000.0;
+    seconds = (std::round(seconds * 100.0)) / 100.0;
     std::cout << "Time elapsed: " << seconds << "s\n";
 }
 
@@ -72,11 +73,13 @@ int main(int argc, char *argv[])
     load_scene(sceneData, camera, world, lights, materials, renderer);
 
     //Render
-    #ifdef DEBUG
     render_and_mesure_time(renderer, outputImageName);
-    #else
-    renderer.render(("rendered/" + outputImageName + ".ppm").c_str());
-    #endif
+
+    // #ifdef DEBUG
+    // render_and_mesure_time(renderer, outputImageName);
+    // #else
+    // renderer.render(("rendered/" + outputImageName + ".ppm").c_str());
+    // #endif
 
     return 0;
 }

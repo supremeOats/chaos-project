@@ -17,3 +17,12 @@ Point3 centroid(const Point3 p0, const Point3 p1, const Point3 p2)
         (p0.z() + p1.z() + p2.z()) / 3
     );
 }
+
+Point3 centroid(int idx, const std::vector<Point3>& verts, const std::vector<MeshTriangle>& tris)
+{
+    return centroid(
+        verts[tris[idx].v[0]],
+        verts[tris[idx].v[1]],
+        verts[tris[idx].v[2]]
+    );
+}
