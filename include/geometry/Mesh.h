@@ -1,7 +1,7 @@
 #pragma once
 
 #include "geometry/Hittable.h"
-#include "utils/BVH.h"
+#include "acceleration/BVH.h"
 #include <memory>
 
 class Mesh : public Hittable

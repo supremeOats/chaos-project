@@ -19,13 +19,15 @@ add_executable(raytracer
     src/renderer/Camera.cpp
     src/renderer/Renderer.cpp
     
+    src/acceleration/BVH.cpp
+    
     src/utils/Color.cpp
     src/utils/Parser.cpp
     src/utils/ImageBuffer.cpp
-    src/utils/BVH.cpp
     src/utils/MeshUtils.cpp
 
     include/utils/Matrix.h
+    src/acceleration/BoundingBox.cpp
 )
 
 add_executable(raytrace_animation
@@ -40,10 +42,11 @@ add_executable(raytrace_animation
     src/renderer/Camera.cpp
     src/renderer/Renderer.cpp
     
+    src/acceleration/BVH.cpp
+    
     src/utils/Color.cpp
     src/utils/Parser.cpp
     src/utils/ImageBuffer.cpp
-    src/utils/BVH.cpp
     src/utils/MeshUtils.cpp
 
     include/utils/Matrix.h
