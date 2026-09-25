@@ -31,15 +31,13 @@ Lights:
 
 Optimization:
 - multithreaded bucket rendering
-- axis-aligned bounding boxes (AABBs) per each mesh
+- acceleration tree per mesh, with an array implementation and using axis-aligned bounding boxes (AABBs)
 
 ### To be implemented
-- bounding volume hierarchy (BHV) tree structure with an array implementation that stores a mesh's geometry in AABBs in a recrsive fashion
 - BHV structure that stores the hittable elements of the scene
 - support for *.blend* files as input scenes or converstion from *.blend* to *.crtscene* format
 
 ## Usage
-
 Using the ray tracer:
 1. Build the application
 In VS Code that would be:
