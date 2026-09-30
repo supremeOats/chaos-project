@@ -158,7 +158,7 @@ Vector3 Renderer::ray_color(const Ray& ray, const int rayDepth) const
         return clamp(finalColorVec, {-1.0, 1.0});
     }
     
-    return gradient_bg(ray);
+    return scene.background->get_color(ray);
 }
 
 Vector3 Renderer::shade_diffuse(const MeshHit& rec) const
@@ -262,13 +262,6 @@ Vector3 Renderer::shade_refractive(const Ray& ray, const MeshHit& rec, const int
 
     return  fresnelCoef         * ray_color(reflected, rayDepth + 1)
             + (1 - fresnelCoef) * ray_color(refracted, rayDepth + 1);
-
-    // check if entering or leaving refractive material
-    //     if leabing then swap IORs and flip hit normal & proceed
-
-    // check if angle between ray and normal is below critical
-    //     if yes then build refraction ray & reflection ray & trace them aka return
-    //     if not then build relection rat & trace it aka return
 }
 
 Vector3 Renderer::shade_constant(const Material& material) const

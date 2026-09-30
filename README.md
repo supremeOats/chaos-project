@@ -1,5 +1,5 @@
 # 🟥 The Chaos Project
-![Dragon Demo Image](./demo/readme_banner.jpeg)
+![Dragon Demo Image](./demo/project_banner2.jpg)
 
 ## Overview
 Chaos Project is a ray tracing engine build as part of [Chaos Camp 2026](https://www.chaos.com/chaos-camp), specifiaclly its Ray Tracing course. The ray tracer is implemented in C++ 14 and uses multithreading, currently it's CPU-based.
@@ -28,6 +28,10 @@ Lights:
 - point light
 - colored lights
 - movable lights
+
+Background:
+- solid color background
+- gradient background
 
 Optimization:
 - multithreaded bucket rendering

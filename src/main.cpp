@@ -60,27 +60,23 @@ int main(int argc, char *argv[])
     MeshList world;
     LightsList lights;
     MaterialList materials;
-    
+    std::unique_ptr<BaseBG> background;
+
     Scene scene{
         &camera,
         &world,
         &lights,
-        &materials
+        &materials,
+        background
     };
 
     Renderer renderer(scene);
 
     //Load scene
-    load_scene(sceneData, camera, world, lights, materials, renderer);
+    load_scene(sceneData, camera, world, lights, materials, background, renderer);
 
     //Render
     render_and_mesure_time(renderer, outputImageName);
-
-    // #ifdef DEBUG
-    // render_and_mesure_time(renderer, outputImageName);
-    // #else
-    // renderer.render(("rendered/" + outputImageName + ".ppm").c_str());
-    // #endif
 
     return 0;
 }

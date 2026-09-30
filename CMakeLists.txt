@@ -18,6 +18,7 @@ add_executable(raytracer
     
     src/renderer/Camera.cpp
     src/renderer/Renderer.cpp
+    src/renderer/Background.cpp
     
     src/acceleration/BVH.cpp
     

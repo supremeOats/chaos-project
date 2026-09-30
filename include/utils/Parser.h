@@ -23,8 +23,10 @@ void read_objects(const Value& objects, MeshList& world);
 
 void read_settings(const Value& settings, Renderer& renderer);
 
-void read_camera(const Value& settings, const Value& camParams, Camera& cam);
+void read_background(const Value& backgroundData, std::unique_ptr<BaseBG>& background);
+
+void read_camera(const Value& camParams, Camera& cam);
 
 void read_lights(const Value& lightsParams, LightsList& lights);
 
-void load_scene(const Document& scene, Camera& camera, MeshList& world, LightsList& lights, MaterialList& materials, Renderer& renderer);
+void load_scene(const Document& scene, Camera& camera, MeshList& world, LightsList& lights, MaterialList& materials, std::unique_ptr<BaseBG>& background, Renderer& renderer);

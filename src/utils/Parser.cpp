@@ -119,11 +119,26 @@ void read_settings(const Value& settings, Renderer& renderer)
     );
 }
 
-void read_camera(const Value& settings, const Value& camParams, Camera& cam)
+void read_background(const Value& settings, std::unique_ptr<BaseBG>& background)
 {
+    if (settings.HasMember("background_type")) {
+        if (!std::strcmp(settings["background_type"].GetString(), "gradient")) {
+            Vector3 tCol = read_vec3(settings["top_color"]);
+            Vector3 bCol = read_vec3(settings["bottom_color"]);
+            
+            background = std::make_unique<GradientBG>(tCol, bCol);
+            return;
+        }
+    }
+
     if (settings.HasMember("background_color"))
-        cam.BG_COLOR = read_color(settings["background_color"]);
-    
+        background = std::make_unique<FlatBG>(read_vec3(settings["background_color"]));
+    else
+        background = std::make_unique<FlatBG>(1.0);
+}
+
+void read_camera(const Value& camParams, Camera& cam)
+{    
     if (camParams.HasMember("fov"))
         cam.set_fov(camParams["fov"].GetDouble());
 
@@ -144,11 +159,13 @@ void read_lights(const Value& lightsParams, LightsList& lights)
     }    
 }
 
-void load_scene(const Document& scene, Camera& camera, MeshList& world, LightsList& lights, MaterialList& materials, Renderer& renderer)
+void load_scene(const Document& scene, Camera& camera, MeshList& world, LightsList& lights, MaterialList& materials, std::unique_ptr<BaseBG>& background, Renderer& renderer)
 {
     read_settings(scene["settings"], renderer);
-    
-    read_camera(scene["settings"], scene["camera"], camera);
+
+    read_background(scene["settings"], background);
+
+    read_camera(scene["camera"], camera);
     
     read_objects(scene["objects"], world);
     

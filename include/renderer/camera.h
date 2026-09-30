@@ -21,6 +21,7 @@ public:
     void set_fov(const double fov);
     
     static Color BG_COLOR;
+    static bool gradient;
     
 private:
     void update_viewport();

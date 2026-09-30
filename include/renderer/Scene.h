@@ -3,7 +3,7 @@
 #include "renderer/Camera.h"
 #include "geometry/Mesh.h"
 #include "light/Light.h"
-#include "light/Light.h"
+#include "renderer/Background.h"
 
 struct Scene
 {
@@ -11,4 +11,5 @@ struct Scene
     MeshList * objects;
     LightsList * lights;
     MaterialList * materials;
+    std::unique_ptr<BaseBG>& background;
 };
