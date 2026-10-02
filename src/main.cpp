@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
     Camera camera;
     MeshList world;
     LightsList lights;
+    TextureList textures;
     MaterialList materials;
     std::unique_ptr<BaseBG> background;
 
@@ -66,6 +67,7 @@ int main(int argc, char *argv[])
         &camera,
         &world,
         &lights,
+        &textures,
         &materials,
         background
     };
@@ -73,7 +75,7 @@ int main(int argc, char *argv[])
     Renderer renderer(scene);
 
     //Load scene
-    load_scene(sceneData, camera, world, lights, materials, background, renderer);
+    load_scene(sceneData, camera, world, lights, textures, materials, background, renderer);
 
     //Render
     render_and_mesure_time(renderer, outputImageName);

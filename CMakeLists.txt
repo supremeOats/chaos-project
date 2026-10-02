@@ -26,9 +26,12 @@ add_executable(raytracer
     src/utils/Parser.cpp
     src/utils/ImageBuffer.cpp
     src/utils/MeshUtils.cpp
-
     include/utils/Matrix.h
+
     src/acceleration/BoundingBox.cpp
+    
+    src/texture/Texture.cpp
+    src/texture/TextureBuffer.cpp
 )
 
 add_executable(raytrace_animation

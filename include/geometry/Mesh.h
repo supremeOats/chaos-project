@@ -19,12 +19,13 @@ public:
     void update_normals();
     void update_vert_normals();
     void update_acc_tree();
-    // void update_aabb();
 
 private:
     bool hit_triangle(const Ray& ray, const MeshTriangle& tri, const Range& rayRange, MeshHit& hitData) const;
     bool in_triangle(const Point3& p, const MeshTriangle& tri) const;
-    
+
+    PixelPos get_uv(int triangle, Vector3& normal) const;
+
     Vector3 interpolated_normal(const Point3& p, const MeshTriangle& tri) const;
     void update_triangle_normal(MeshTriangle& tri);
     
@@ -32,8 +33,8 @@ private:
     std::vector<Point3> vertices;
     std::vector<MeshTriangle> triangles;
     std::vector<Vector3> vertNorms;
+    std::vector<PixelPos> uvCoords;
 
-    // BoundingBox aabb;
     AccTree accTree;
 };
 

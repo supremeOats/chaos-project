@@ -1,10 +1,5 @@
 #include "geometry/Mesh.h"
 
-// bool Mesh::hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) const
-// {
-//     return bvh.hit(*this, ray, rayRange, hitData);
-// }
-
 bool Mesh::hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) const
 {
     std::vector<int> intersectedTriangles = accTree.intersect(ray);
@@ -30,30 +25,6 @@ bool Mesh::hit(const Ray& ray, const Range& rayRange, MeshHit& hitData) const
     }
 
     return successfulHit;
-
-    // if (!aabb.intersect(ray)) {
-    //     return false;
-    // }
-
-    // double closest = rayRange.maxVal;
-    // MeshHit currHit = {hitData.t, hitData.normal, hitData.point};
-    
-    // bool successfulHit = false;
-    
-    // for (const auto& tri : triangles) {        
-    //     if (hit_triangle(ray, tri, rayRange, currHit)) {
-    //         if (currHit.t > rayRange.minVal && currHit.t < closest) {                
-    //             closest = currHit.t;
-                
-    //             hitData = currHit;
-    //             hitData.materialIdx = materialIdx;
-                
-    //             successfulHit = true;
-    //         }
-    //     }
-    // }
-    
-    // return successfulHit;
 }
 
 void Mesh::add_vert(const Point3& v)

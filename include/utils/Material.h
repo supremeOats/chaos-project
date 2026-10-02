@@ -1,7 +1,6 @@
 #pragma once
 
-#include "geometry/Vector3.h"
-#include <vector>
+#include "texture/Texture.h"
 
 enum MaterialType {
     DIFFUSE, REFLECTIVE, REFRACTIVE, CONSTANT
@@ -10,12 +9,13 @@ enum MaterialType {
 class Material
 {
 public:
-    Material(const MaterialType type, const Vector3& albedo, const bool smooth, const double ior)
-        : _type(type), _albedo(albedo), _smooth(smooth), _ior(ior) {}
+    Material(const MaterialType type, int textureIdx, const bool smooth, const double ior)
+        : _type(type), textureIdx(textureIdx), _smooth(smooth), _ior(ior) {}
 
     MaterialType type() const { return _type; }
     
-    const Vector3& albedo() const { return _albedo; }
+    int texture_index() const { return textureIdx; }
+    // const Vector3& albedo(double u, double v, ) const { return texture->at(u, v); }
     
     bool smooth() const { return _smooth; }
 
@@ -23,7 +23,9 @@ public:
 
 private:
     MaterialType _type;
-    Vector3 _albedo;
+    // Vector3 _albedo;
+    int textureIdx;
+
     bool _smooth;
     double _ior;
 };

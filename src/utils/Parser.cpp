@@ -29,7 +29,31 @@ RTMatrix read_RTMatrix(const Value& mat)
     return res;
 }
 
-Material read_material(const Value& material)
+std::shared_ptr<BaseTexture> read_texture(const Value& texture)
+{
+    std::string texName = texture["name"].GetString();
+    std::string texType = texture["type"].GetString();
+
+    if (!std::strcmp(texType.c_str(), "albedo")) {
+        return std::make_shared<ColorTexture>(texName, read_vec3(texture["albedo"]));
+    }
+    // else if (!std::strcmp(texType.c_str(), "bitmap")) {
+    //     return std::make_shared<Bitmap>(texName, texture["albedo"].GetString());
+    // }
+    else {
+        return std::make_shared<ColorTexture>(texName, Vector3(1.0));
+    }
+
+}
+
+void read_texture_list(const Value& textures, TextureList& texturesList)
+{
+    for (SizeType t = 0; t < textures.Size(); ++t) {
+        texturesList.push_back(read_texture(textures[t]));
+    }
+}
+
+Material read_material(const Value& material, const TextureList& textures)
 {
     MaterialType type;
 
@@ -46,22 +70,25 @@ Material read_material(const Value& material)
         type = MaterialType::CONSTANT;
     }
 
-    Vector3 albedo = material.HasMember("albedo") ? read_vec3(material["albedo"]) : Vector3(1.0);
+    //Texture
+    int textureIdx = 0;
+    if (material.HasMember("albedo")) {
+        textureIdx = find_texture_idx(textures, material["albedo"].GetString());
+        textureIdx = textureIdx > 0 ? textureIdx : 0;
+    }
+
+    Vector3 textureName = material.HasMember("albedo") ? read_vec3(material["albedo"]) : Vector3(1.0);
+    
     bool smooth = material.HasMember("smooth_shading") ? material["smooth_shading"].GetBool() : false;
     double ior = material.HasMember("ior") ? material["ior"].GetDouble() : 1.0;
 
-    return Material(
-        type,
-        albedo,
-        smooth,
-        ior
-    );
+    return Material(type, textureIdx, smooth, ior);
 }
 
-void read_material_list(const Value& materials, MaterialList& materialsList)
+void read_material_list(const Value& materials, MaterialList& materialsList, const TextureList& textures)
 {
     for (SizeType m = 0; m < materials.Size(); ++m) {
-        materialsList.push_back(read_material(materials[m]));
+        materialsList.push_back(read_material(materials[m], textures));
     }
 }
 
@@ -159,7 +186,7 @@ void read_lights(const Value& lightsParams, LightsList& lights)
     }    
 }
 
-void load_scene(const Document& scene, Camera& camera, MeshList& world, LightsList& lights, MaterialList& materials, std::unique_ptr<BaseBG>& background, Renderer& renderer)
+void load_scene(const Document& scene, Camera& camera, MeshList& world, LightsList& lights, TextureList& textures, MaterialList& materials, std::unique_ptr<BaseBG>& background, Renderer& renderer)
 {
     read_settings(scene["settings"], renderer);
 
@@ -169,10 +196,16 @@ void load_scene(const Document& scene, Camera& camera, MeshList& world, LightsLi
     
     read_objects(scene["objects"], world);
     
-    if(scene.HasMember("materials")) {
-        read_material_list(scene["materials"], materials);
+    if(scene.HasMember("textures")) {
+        read_texture_list(scene["textures"], textures);
     } else {
-        materials.push_back(Material(DIFFUSE, (1.0), false, 1.0));
+        textures.push_back(std::make_shared<ColorTexture>("Default", Vector3(1.0)));
+    }
+
+    if(scene.HasMember("materials")) {
+        read_material_list(scene["materials"], materials, textures);
+    } else {
+        materials.push_back(Material(DIFFUSE, 0, false, 1.0));
     }
     
     if(scene.HasMember("lights")) {

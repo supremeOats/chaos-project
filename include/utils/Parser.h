@@ -13,9 +13,17 @@ Color read_color(const Value& col);
 
 RTMatrix read_RTMatrix(const Value& mat);
 
-Material read_material(const Value& material);
+std::shared_ptr<BaseTexture> read_texture(const Value&);
 
-void read_material_list(const Value& materials, MaterialList& materialsList);
+std::shared_ptr<BaseTexture> read_texture(const Value& texture);
+
+void read_texture_list(const Value& textures, TextureList& texturesList);
+
+Material read_material(const Value& material, const TextureList& textures);
+
+void read_material_list(
+    const Value& materials, MaterialList& materialsList, const TextureList& textures
+);
 
 void read_mesh(const Value& meshData, Mesh& mesh);
 
@@ -29,4 +37,13 @@ void read_camera(const Value& camParams, Camera& cam);
 
 void read_lights(const Value& lightsParams, LightsList& lights);
 
-void load_scene(const Document& scene, Camera& camera, MeshList& world, LightsList& lights, MaterialList& materials, std::unique_ptr<BaseBG>& background, Renderer& renderer);
+void load_scene(
+    const Document& scene,
+    Camera& camera,
+    MeshList& world,
+    LightsList& lights,
+    TextureList& textures,
+    MaterialList& materials,
+    std::unique_ptr<BaseBG>& background,
+    Renderer& renderer
+);

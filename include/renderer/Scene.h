@@ -10,6 +10,7 @@ struct Scene
     Camera * camera;
     MeshList * objects;
     LightsList * lights;
+    TextureList * textures;
     MaterialList * materials;
     std::unique_ptr<BaseBG>& background;
 };

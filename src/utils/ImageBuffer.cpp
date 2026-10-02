@@ -1,7 +1,13 @@
 #include "renderer/ImageBuffer.h"
 
-ImageBuffer::ImageBuffer(const int height, const int width) : Grid2D(height, width) {}
-        
+ImageBuffer::ImageBuffer(const int height, const int width)
+    : Grid2D(height, width)
+{}
+
+ImageBuffer::ImageBuffer(const int height, const int width, const std::vector<Color> data)
+    : Grid2D(height, width, data)
+{}
+
 float ImageBuffer::ratio() const
 {
     return (float)_width / _height;

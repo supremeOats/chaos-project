@@ -167,6 +167,7 @@ Vector3 Renderer::shade_diffuse(const MeshHit& rec) const
 
     const LightsList& lights = *scene.lights;
     const MaterialList& materials = *scene.materials;
+    const TextureList& textures = *scene.textures;
 
     Material hitMaterial = materials[rec.materialIdx];
     Vector3 hitNormal = hitMaterial.smooth() ? rec.pointNormal : rec.normal;
@@ -189,9 +190,11 @@ Vector3 Renderer::shade_diffuse(const MeshHit& rec) const
             double lsArea = 4 * PI * lsRaduis * lsRaduis;
             lightVal *= lightSrc.intensity() / lsArea;
 
+            std::shared_ptr<BaseTexture> hitTexture = textures[hitMaterial.texture_index()];
+
             Vector3 colorVec = component_wise(
                 color_to_norm_vec(lightSrc.color()),
-                hitMaterial.albedo()
+                hitTexture->at(rec.pointNormal.x(), rec.pointNormal.y())
             );
 
             finalColorVec += colorVec * lightVal;
@@ -210,7 +213,10 @@ Vector3 Renderer::shade_reflective(const Ray& ray, const MeshHit& rec, const int
     Material& hitMaterial = scene.materials->at(rec.materialIdx);
     Vector3 hitNormal = hitMaterial.smooth() ? rec.pointNormal : rec.normal;
 
-    Vector3 materialAlbedo = scene.materials->at(rec.materialIdx).albedo();
+    const TextureList& textures = *scene.textures;
+    Vector3 materialAlbedo = textures[hitMaterial.texture_index()]->at(
+        rec.pointNormal.x(), rec.pointNormal.y()
+    );
 
     Ray reflected(
         rec.point + hitNormal * REFLECTION_BIAS,
@@ -266,7 +272,8 @@ Vector3 Renderer::shade_refractive(const Ray& ray, const MeshHit& rec, const int
 
 Vector3 Renderer::shade_constant(const Material& material) const
 {
-    return material.albedo();
+    const TextureList& textures = *scene.textures;
+    return textures[material.texture_index()]->at(0, 0);
 }
 
 bool Renderer::in_shadow(const MeshHit& rec, const Vector3 lightDir, const double lightDist) const
@@ -285,13 +292,6 @@ bool Renderer::in_shadow(const MeshHit& rec, const Vector3 lightDir, const doubl
     }
     
     return false;
-}
-
-Vector3 Renderer::gradient_bg(const Ray& ray) const
-{
-    Vector3 unit_direction = normalized(ray.direction());
-    auto a = 0.5*(unit_direction.y() + 1.0);
-    return Vector3(1.0, 1.0, 1.0)*(1.0-a) + color_to_norm_vec(scene.camera->BG_COLOR)*a;
 }
 
 void Renderer::init_buffer()
